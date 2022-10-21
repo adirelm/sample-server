@@ -1,29 +1,20 @@
-import bodyParser from "body-parser";
 import express from "express";
-import path from "path";
-import { Sequelize } from "sequelize-typescript";
-import { Server } from "./models/server";
-
-export const sequelize = new Sequelize(
-  "sample-server",
-  "postgres",
-  "kofkof12",
-  {
-    host: "localhost",
-    dialect: "postgres",
-    models: [Server],
-  }
-);
+import bodyParser from "body-parser";
+import { sequelize } from "./helpers/database";
+import serverHandler from "./routes/server";
 
 const app = express();
 
 app.use(bodyParser.json());
 
+// Routes middleware
+app.use(serverHandler);
+
 app.listen({ port: 3000 }, async () => {
   try {
+    // await sequelize.sync({ force: true });
     await sequelize.authenticate();
     console.log("Listening on port 3000");
-    await Server.create({ id: 1, name: "bla", url: "aaa" });
   } catch (err) {
     console.log(err);
   }
