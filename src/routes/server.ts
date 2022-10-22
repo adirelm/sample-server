@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { checkExistenceOfUrl } from "../utils/helpers/main";
-import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
 
 import Server from "../models/server";
 
@@ -98,14 +96,8 @@ serverHandler.get("/servers", async (req, res, next) => {
 
 serverHandler.post("/server", async (req, res, next) => {
   const name = req.body.name;
+  const url = req.body.url;
   const status = req.body.status;
-  let url = modifyUrlWithHttpOrHttps(req.body.url);
-
-  const isExist = await checkExistenceOfUrl(url);
-  if (isExist)
-    return res
-      .status(409)
-      .json({ status: 201, message: "Url already exists", data: [] });
 
   try {
     const server = await Server.create({ name, url, status });
