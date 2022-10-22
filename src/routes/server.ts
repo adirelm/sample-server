@@ -1,5 +1,8 @@
 import { Router } from "express";
+import { body } from "express-validator";
 import { ApiError } from "../helpers/error";
+import { renderSuccess } from "../utils/helpers/main";
+import { handleValidationErrors } from "../helpers/error";
 import { checkExistenceOfUrl } from "../utils/helpers/main";
 import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
 
@@ -73,12 +76,7 @@ const serverHandler = Router();
 serverHandler.get("/servers", async (req, res, next) => {
   try {
     const servers = await Server.findAll();
-
-    res.status(200).json({
-      status: 200,
-      message: "Sucessfully fetched servers",
-      data: servers,
-    });
+    renderSuccess(res, 200, "Successfully fectched servers", servers);
   } catch (error) {
     next(error);
   }
@@ -108,25 +106,27 @@ serverHandler.get("/servers", async (req, res, next) => {
  *                $ref: '#/components/schemas/Server'
  */
 
-serverHandler.post("/server", async (req, res, next) => {
-  const name = req.body.name;
-  const status = req.body.status;
-  let url = modifyUrlWithHttpOrHttps(req.body.url);
+serverHandler.post(
+  "/server",
+  [body("url").isURL()],
+  async (req: any, res: any, next: any) => {
+    try {
+      handleValidationErrors(req);
+      const name = req.body.name;
+      const status = req.body.status;
+      let url = modifyUrlWithHttpOrHttps(req.body.url);
 
-  try {
-    if (await checkExistenceOfUrl(url)) {
-      throw new ApiError(400, "Url already exists");
+      if (await checkExistenceOfUrl(url)) {
+        throw new ApiError(400, "Url already exists");
+      }
+
+      const server = await Server.create({ name, url, status });
+      renderSuccess(res, 201, "Server created", server);
+    } catch (error) {
+      next(error);
     }
-
-    const server = await Server.create({ name, url, status });
-
-    res
-      .status(201)
-      .json({ status: 201, message: "Server created", data: server });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 /**
  * @swagger
@@ -155,27 +155,34 @@ serverHandler.post("/server", async (req, res, next) => {
  *        description: Not found
  */
 
-serverHandler.patch("/server/:serverId", async (req, res, next) => {
-  const id = req.params.serverId;
-  const name = req.body.name;
-  const url = req.body.url;
-  const status = req.body.status;
+serverHandler.patch(
+  "/server/:serverId",
+  [body("url").isURL()],
+  async (req: any, res: any, next: any) => {
+    try {
+      handleValidationErrors(req);
+      const id = req.params.serverId;
+      const name = req.body.name;
+      const status = req.body.status;
+      let url = modifyUrlWithHttpOrHttps(req.body.url);
 
-  try {
-    const server = await Server.findByPk(id);
+      if (await checkExistenceOfUrl(url)) {
+        throw new ApiError(400, "Url already exists");
+      }
 
-    if (!server) {
-      throw new ApiError(400, "Server not found");
+      const server = await Server.findByPk(id);
+
+      if (!server) {
+        throw new ApiError(400, "Server not found");
+      }
+
+      const record = await server.update({ name, url, status });
+      renderSuccess(res, 200, "Server updated", record);
+    } catch (error) {
+      next(error);
     }
-
-    const record = await server.update({ name, url, status });
-    res
-      .status(200)
-      .json({ status: 200, message: "Server updated", data: record });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 /**
  * @swagger
@@ -210,10 +217,8 @@ serverHandler.delete("/server/:serverId", async (req, res, next) => {
     if (!server) {
       throw new ApiError(400, "Server not found");
     }
-    server.destroy();
-    res
-      .status(200)
-      .json({ status: 204, message: "Server deleted", data: server });
+    await server.destroy();
+    renderSuccess(res, 204, "Server deleted", server);
   } catch (error) {
     next(error);
   }

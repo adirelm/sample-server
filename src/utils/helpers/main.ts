@@ -3,7 +3,7 @@ import Server from "../../models/server";
 export const HTTP = "http";
 export const HTTPS = "https";
 
-export const modifyUrlWithHttpOrHttps = function (url: string) {
+export const modifyUrlWithHttpOrHttps = function (url: string): string {
   let modifiedUrl = url;
   if (url) {
     const prefix = url.split(":");
@@ -21,4 +21,15 @@ export const checkExistenceOfUrl = async function (
   const record = await Server.findOne({ where: { url } });
 
   return !!record;
+};
+
+export const renderSuccess = function (
+  res: any,
+  status: number,
+  message: string,
+  data: any
+) {
+  if (status) {
+    res.status(status).json({ status, message, data });
+  }
 };

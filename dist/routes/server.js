@@ -4,9 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const error_1 = require("../helpers/error");
 const main_1 = require("../utils/helpers/main");
+const error_2 = require("../helpers/error");
 const main_2 = require("../utils/helpers/main");
+const main_3 = require("../utils/helpers/main");
 const server_1 = __importDefault(require("../models/server"));
 const serverHandler = (0, express_1.Router)();
 /**
@@ -73,11 +76,7 @@ const serverHandler = (0, express_1.Router)();
 serverHandler.get("/servers", async (req, res, next) => {
     try {
         const servers = await server_1.default.findAll();
-        res.status(200).json({
-            status: 200,
-            message: "Sucessfully fetched servers",
-            data: servers,
-        });
+        (0, main_1.renderSuccess)(res, 200, "Successfully fectched servers", servers);
     }
     catch (error) {
         next(error);
@@ -106,18 +105,17 @@ serverHandler.get("/servers", async (req, res, next) => {
  *              items:
  *                $ref: '#/components/schemas/Server'
  */
-serverHandler.post("/server", async (req, res, next) => {
-    const name = req.body.name;
-    const status = req.body.status;
-    let url = (0, main_2.modifyUrlWithHttpOrHttps)(req.body.url);
+serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL()], async (req, res, next) => {
     try {
-        if (await (0, main_1.checkExistenceOfUrl)(url)) {
+        (0, error_2.handleValidationErrors)(req);
+        const name = req.body.name;
+        const status = req.body.status;
+        let url = (0, main_3.modifyUrlWithHttpOrHttps)(req.body.url);
+        if (await (0, main_2.checkExistenceOfUrl)(url)) {
             throw new error_1.ApiError(400, "Url already exists");
         }
         const server = await server_1.default.create({ name, url, status });
-        res
-            .status(201)
-            .json({ status: 201, message: "Server created", data: server });
+        (0, main_1.renderSuccess)(res, 201, "Server created", server);
     }
     catch (error) {
         next(error);
@@ -149,20 +147,22 @@ serverHandler.post("/server", async (req, res, next) => {
  *      404:
  *        description: Not found
  */
-serverHandler.patch("/server/:serverId", async (req, res, next) => {
-    const id = req.params.serverId;
-    const name = req.body.name;
-    const url = req.body.url;
-    const status = req.body.status;
+serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").isURL()], async (req, res, next) => {
     try {
+        (0, error_2.handleValidationErrors)(req);
+        const id = req.params.serverId;
+        const name = req.body.name;
+        const status = req.body.status;
+        let url = (0, main_3.modifyUrlWithHttpOrHttps)(req.body.url);
+        if (await (0, main_2.checkExistenceOfUrl)(url)) {
+            throw new error_1.ApiError(400, "Url already exists");
+        }
         const server = await server_1.default.findByPk(id);
         if (!server) {
             throw new error_1.ApiError(400, "Server not found");
         }
         const record = await server.update({ name, url, status });
-        res
-            .status(200)
-            .json({ status: 200, message: "Server updated", data: record });
+        (0, main_1.renderSuccess)(res, 200, "Server updated", record);
     }
     catch (error) {
         next(error);
@@ -198,10 +198,8 @@ serverHandler.delete("/server/:serverId", async (req, res, next) => {
         if (!server) {
             throw new error_1.ApiError(400, "Server not found");
         }
-        server.destroy();
-        res
-            .status(200)
-            .json({ status: 204, message: "Server deleted", data: server });
+        await server.destroy();
+        (0, main_1.renderSuccess)(res, 204, "Server deleted", server);
     }
     catch (error) {
         next(error);
