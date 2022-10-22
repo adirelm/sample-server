@@ -13,7 +13,7 @@ const userName = process.env.USER_NAME;
 const password = process.env.PASSWORD;
 const host = process.env.HOST;
 let sequelize;
-if (process.env.NODE_ENV === "production" && false) {
+if (process.env.NODE_ENV === "production" || true) {
     sequelize = new sequelize_typescript_1.Sequelize("postgres://zmtpbrnahytmdy:1cdbc716d6574fc611b99b4bcf1daae38b32d0ada6c57b8b4cdd85663f6f5824@ec2-23-20-140-229.compute-1.amazonaws.com:5432/d2vtb9480939rt", {
         dialectOptions: {
             ssl: {
