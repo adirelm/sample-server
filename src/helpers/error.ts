@@ -1,4 +1,4 @@
-import { param, validationResult } from "express-validator";
+import { validationResult } from "express-validator";
 
 export class ApiError extends Error {
   status: number;
