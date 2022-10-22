@@ -2,10 +2,7 @@
   "name": "sample-server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
-  "engines": {
-    "node": "18.5.0"
-  },
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:build": "tsc -w",
