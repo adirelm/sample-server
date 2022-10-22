@@ -6,7 +6,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const database_1 = require("./helpers/database");
+const database_1 = __importDefault(require("./helpers/database"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_1 = require("./helpers/swagger");
 const cron_1 = require("./helpers/cron");
@@ -19,9 +19,8 @@ app.use("/api", swagger_ui_express_1.default.serve, swagger_ui_express_1.default
 app.use(server_1.default);
 app.listen({ port: PORT }, async () => {
     try {
-        await database_1.sequelize.sync({ force: true });
-        console.log("try to login");
-        await database_1.sequelize.authenticate();
+        // await sequelize.sync({ force: true });
+        await database_1.default.authenticate();
         cron_1.schedulingTasks.start();
         console.log("Listening on port " + PORT);
     }

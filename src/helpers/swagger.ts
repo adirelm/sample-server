@@ -5,6 +5,8 @@ const url =
     ? "https://sample-server-adir.herokuapp.com/"
     : "http://localhost:3000";
 
+console.log(url);
+
 const options = {
   definition: {
     openapi: "3.0.0",

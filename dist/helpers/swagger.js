@@ -5,6 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.specs = void 0;
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const url = process.env.NODE_ENV === "production"
+    ? "https://sample-server-adir.herokuapp.com/"
+    : "http://localhost:3000";
+console.log(url);
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -15,7 +19,7 @@ const options = {
         },
         servers: [
             {
-                url: "http://localhost:3000",
+                url: url,
             },
         ],
     },
