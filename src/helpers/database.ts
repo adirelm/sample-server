@@ -15,13 +15,16 @@ const host = process.env.HOST!;
 //   dialect: "postgres",
 //   models: [Server, History],
 // });
+
 export const sequelize = new Sequelize(
-  "sample-server-adir",
-  "zmtpbrnahytmdy",
-  "1cdbc716d6574fc611b99b4bcf1daae38b32d0ada6c57b8b4cdd85663f6f5824",
+  "postgres://zmtpbrnahytmdy:1cdbc716d6574fc611b99b4bcf1daae38b32d0ada6c57b8b4cdd85663f6f5824@ec2-23-20-140-229.compute-1.amazonaws.com:5432/d2vtb9480939rt",
   {
-    host: "ec2-23-20-140-229.compute-1.amazonaws.com",
-    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
     models: [Server, History],
   }
 );

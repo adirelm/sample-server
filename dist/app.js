@@ -19,10 +19,11 @@ app.use("/api", swagger_ui_express_1.default.serve, swagger_ui_express_1.default
 app.use(server_1.default);
 app.listen({ port: PORT }, async () => {
     try {
-        // await sequelize.sync({ force: true });
+        await database_1.sequelize.sync({ force: true });
+        console.log("try to login");
         await database_1.sequelize.authenticate();
         cron_1.schedulingTasks.start();
-        console.log("Listening on port 3000");
+        console.log("Listening on port " + PORT);
     }
     catch (err) {
         console.log(err);
