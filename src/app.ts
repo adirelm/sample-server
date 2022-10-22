@@ -20,6 +20,7 @@ app.use(serverHandler);
 app.listen({ port: PORT }, async () => {
   try {
     // await sequelize.sync({ force: true });
+    console.log("try to login");
     await sequelize.authenticate();
     schedulingTasks.start();
     console.log("Listening on port " + PORT);
