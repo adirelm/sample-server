@@ -15,9 +15,6 @@ const serverHandler = Router();
  *        - name
  *        - url
  *      properties:
- *        id:
- *          type: number
- *          description: The server's id
  *        name:
  *          type: string
  *          description: The server's name

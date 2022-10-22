@@ -1,5 +1,6 @@
 import {
   AllowNull,
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
@@ -19,6 +20,11 @@ export default class History extends Model {
   @Column(DataType.ENUM(...Object.values(Status)))
   status: Status;
 
+  @AllowNull(false)
   @ForeignKey(() => Server)
+  @Column
   serverId: number;
+
+  @BelongsTo(() => Server)
+  server: Server;
 }

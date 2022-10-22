@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import { sequelize } from "./helpers/database";
 import swaggerUI from "swagger-ui-express";
 import { specs } from "./helpers/swagger";
+import { schedulingTasks } from "./helpers/cron";
 
 import serverHandler from "./routes/server";
 
@@ -20,6 +21,7 @@ app.listen({ port: PORT }, async () => {
   try {
     // await sequelize.sync({ force: true });
     await sequelize.authenticate();
+    schedulingTasks.start();
     console.log("Listening on port 3000");
   } catch (err) {
     console.log(err);
