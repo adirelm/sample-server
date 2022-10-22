@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { ApiError } from "../helpers/error";
 import { checkExistenceOfUrl } from "../utils/helpers/main";
 import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
 
@@ -28,7 +29,18 @@ const serverHandler = Router();
  *          enum: [success, failure]
  *          description: The server's status
  *
- *
+ *    ServerRequestBody:
+ *      type: object
+ *      required:
+ *        - name
+ *        - url
+ *      properties:
+ *        name:
+ *          type: string
+ *          description: The server's name
+ *        url:
+ *          type: string
+ *          description: The server's url
  *
  *  parameters:
  *    ServerIdPathParam:
@@ -68,7 +80,7 @@ serverHandler.get("/servers", async (req, res, next) => {
       data: servers,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -84,7 +96,7 @@ serverHandler.get("/servers", async (req, res, next) => {
  *      content:
  *        application/json:
  *          schema:
- *            $ref: "#/components/schemas/Server"
+ *            $ref: "#/components/schemas/ServerRequestBody"
  *    responses:
  *      201:
  *        description: Server Created
@@ -101,20 +113,18 @@ serverHandler.post("/server", async (req, res, next) => {
   const status = req.body.status;
   let url = modifyUrlWithHttpOrHttps(req.body.url);
 
-  const isExist = await checkExistenceOfUrl(url);
-  if (isExist)
-    return res
-      .status(409)
-      .json({ status: 201, message: "Url already exists", data: [] });
-
   try {
+    if (await checkExistenceOfUrl(url)) {
+      throw new ApiError(400, "Url already exists");
+    }
+
     const server = await Server.create({ name, url, status });
 
     res
       .status(201)
       .json({ status: 201, message: "Server created", data: server });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -131,7 +141,7 @@ serverHandler.post("/server", async (req, res, next) => {
  *      content:
  *        application/json:
  *          schema:
- *            $ref: "#/components/schemas/Server"
+ *            $ref: "#/components/schemas/ServerRequestBody"
  *    responses:
  *      200:
  *        description: Server updated
@@ -154,18 +164,16 @@ serverHandler.patch("/server/:serverId", async (req, res, next) => {
   try {
     const server = await Server.findByPk(id);
 
-    if (server) {
-      const updatedServer = await server.update({ name, url, status });
-      res
-        .status(200)
-        .json({ status: 200, message: "Server updated", data: updatedServer });
+    if (!server) {
+      throw new ApiError(400, "Server not found");
     }
 
+    const record = await server.update({ name, url, status });
     res
-      .status(404)
-      .json({ status: 404, message: "Server not found", data: [] });
+      .status(200)
+      .json({ status: 200, message: "Server updated", data: record });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -199,18 +207,15 @@ serverHandler.delete("/server/:serverId", async (req, res, next) => {
   try {
     const server = await Server.findByPk(id);
 
-    if (server) {
-      server.destroy();
-      res
-        .status(200)
-        .json({ status: 204, message: "Server deleted", data: server });
+    if (!server) {
+      throw new ApiError(400, "Server not found");
     }
-
+    server.destroy();
     res
-      .status(404)
-      .json({ status: "404", message: "Server not found", data: [] });
+      .status(200)
+      .json({ status: 204, message: "Server deleted", data: server });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 

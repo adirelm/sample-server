@@ -1,8 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
-import sequelize from "./helpers/database";
-import swaggerUI from "swagger-ui-express";
 import { specs } from "./helpers/swagger";
+import sequelize from "./helpers/database";
+import { ApiError } from "./helpers/error";
+import swaggerUI from "swagger-ui-express";
+import { validator } from "./helpers/swagger";
 import { schedulingTasks } from "./helpers/cron";
 
 import serverHandler from "./routes/server";
@@ -15,14 +17,19 @@ app.use(bodyParser.json());
 
 // Routes middleware
 app.use("/api", swaggerUI.serve, swaggerUI.setup(specs));
+app.use(validator); // OpenApiValidator
 app.use(serverHandler);
+
+app.use((err: ApiError, req: any, res: any, next: any) => {
+  res
+    .status(err.status || 500)
+    .json({ status: err.status, message: err.message });
+});
 
 app.listen({ port: PORT }, async () => {
   try {
     // await sequelize.sync({ force: true });
     await sequelize.authenticate();
-    console.log(PORT);
-    console.log(process.env.NODE_ENV);
     schedulingTasks.start();
     console.log("Listening on port " + PORT);
   } catch (err) {

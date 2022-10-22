@@ -7,7 +7,7 @@ exports.schedulingTasks = void 0;
 const node_cron_1 = __importDefault(require("node-cron"));
 const healthCheckTask_1 = require("../tasks/healthCheckTask");
 const sampleServerTask_1 = require("../tasks/sampleServerTask");
-exports.schedulingTasks = node_cron_1.default.schedule("* * * * *", async () => {
+exports.schedulingTasks = node_cron_1.default.schedule("*/60 * * * *", async () => {
     await (0, sampleServerTask_1.sampleServerTask)();
     await (0, healthCheckTask_1.healthCheckTask)();
 }, { scheduled: false });
