@@ -11,7 +11,7 @@ const password = process.env.PASSWORD!;
 const host = process.env.HOST!;
 
 export const sequelize = new Sequelize(serverName, userName, password, {
-  host: "https://sample-server-adir.herokuapp.com/",
+  host: host,
   dialect: "postgres",
   models: [Server, History],
 });
