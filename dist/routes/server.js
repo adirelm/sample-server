@@ -149,17 +149,17 @@ serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL()], as
  */
 serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").isURL()], async (req, res, next) => {
     try {
-        (0, error_2.handleValidationErrors)(req);
         const id = req.params.serverId;
+        const server = await server_1.default.findByPk(id);
+        if (!server) {
+            throw new error_1.ApiError(400, "Server not found");
+        }
+        (0, error_2.handleValidationErrors)(req);
         const name = req.body.name;
         const status = req.body.status;
         let url = (0, main_3.modifyUrlWithHttpOrHttps)(req.body.url);
         if (await (0, main_2.checkExistenceOfUrl)(url)) {
             throw new error_1.ApiError(400, "Url already exists");
-        }
-        const server = await server_1.default.findByPk(id);
-        if (!server) {
-            throw new error_1.ApiError(400, "Server not found");
         }
         const record = await server.update({ name, url, status });
         (0, main_1.renderSuccess)(res, 200, "Server updated", record);

@@ -14,7 +14,7 @@ export const sampleServerTask = async function () {
     const url = server.url;
     const startTime = now();
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, { validateStatus: () => true });
       const endTime = now();
       const responseTime = (endTime - startTime) / 1000;
 

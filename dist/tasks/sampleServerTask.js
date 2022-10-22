@@ -16,7 +16,7 @@ const sampleServerTask = async function () {
         const url = server.url;
         const startTime = (0, performance_now_1.default)();
         try {
-            const response = await axios_1.default.get(url);
+            const response = await axios_1.default.get(url, { validateStatus: () => true });
             const endTime = (0, performance_now_1.default)();
             const responseTime = (endTime - startTime) / 1000;
             if (response.statusText === "OK" && responseTime < TIME_FOR_FAILURE) {

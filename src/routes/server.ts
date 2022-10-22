@@ -160,20 +160,19 @@ serverHandler.patch(
   [body("url").isURL()],
   async (req: any, res: any, next: any) => {
     try {
-      handleValidationErrors(req);
       const id = req.params.serverId;
+      const server = await Server.findByPk(id);
+      if (!server) {
+        throw new ApiError(400, "Server not found");
+      }
+
+      handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
       let url = modifyUrlWithHttpOrHttps(req.body.url);
 
       if (await checkExistenceOfUrl(url)) {
         throw new ApiError(400, "Url already exists");
-      }
-
-      const server = await Server.findByPk(id);
-
-      if (!server) {
-        throw new ApiError(400, "Server not found");
       }
 
       const record = await server.update({ name, url, status });

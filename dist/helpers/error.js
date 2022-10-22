@@ -14,8 +14,9 @@ const handleValidationErrors = function (req) {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
         const firstError = errors.array()[0];
-        const message = firstError.msg;
-        const param = firstError.param;
+        const message = firstError.msg.toLowerCase();
+        const param = firstError.param[0].toUpperCase() +
+            firstError.param.slice(1, firstError.param.length);
         throw new ApiError(400, `${param} ${message}`);
     }
 };

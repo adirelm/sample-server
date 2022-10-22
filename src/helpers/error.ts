@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import { param, validationResult } from "express-validator";
 
 export class ApiError extends Error {
   status: number;
@@ -15,8 +15,10 @@ export const handleValidationErrors = function (req: any) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const firstError = errors.array()[0];
-    const message = firstError.msg;
-    const param = firstError.param;
+    const message = firstError.msg.toLowerCase();
+    const param =
+      firstError.param[0].toUpperCase() +
+      firstError.param.slice(1, firstError.param.length);
 
     throw new ApiError(400, `${param} ${message}`);
   }
