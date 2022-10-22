@@ -1,5 +1,10 @@
 import swaggerJsDoc from "swagger-jsdoc";
 
+const url =
+  process.env.NODE_ENV === "production"
+    ? "https://sample-server-adir.herokuapp.com/"
+    : "http://localhost:3000";
+
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -10,7 +15,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: url,
       },
     ],
   },

@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { sequelize } from "./helpers/database";
+import sequelize from "./helpers/database";
 import swaggerUI from "swagger-ui-express";
 import { specs } from "./helpers/swagger";
 import { schedulingTasks } from "./helpers/cron";
