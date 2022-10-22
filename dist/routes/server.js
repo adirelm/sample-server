@@ -1,18 +1,11 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const main_1 = require("../utils/helpers/main");
+const main_2 = require("../utils/helpers/main");
 const server_1 = __importDefault(require("../models/server"));
 const serverHandler = (0, express_1.Router)();
 /**
@@ -65,9 +58,9 @@ const serverHandler = (0, express_1.Router)();
  *              items:
  *                $ref: '#/components/schemas/Server'
  */
-serverHandler.get("/servers", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+serverHandler.get("/servers", async (req, res, next) => {
     try {
-        const servers = yield server_1.default.findAll();
+        const servers = await server_1.default.findAll();
         res.status(200).json({
             status: 200,
             message: "Sucessfully fetched servers",
@@ -77,7 +70,7 @@ serverHandler.get("/servers", (req, res, next) => __awaiter(void 0, void 0, void
     catch (error) {
         console.log(error);
     }
-}));
+});
 /**
  * @swagger
  * /server:
@@ -101,12 +94,17 @@ serverHandler.get("/servers", (req, res, next) => __awaiter(void 0, void 0, void
  *              items:
  *                $ref: '#/components/schemas/Server'
  */
-serverHandler.post("/server", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+serverHandler.post("/server", async (req, res, next) => {
     const name = req.body.name;
-    const url = req.body.url;
     const status = req.body.status;
+    let url = (0, main_2.modifyUrlWithHttpOrHttps)(req.body.url);
+    const isExist = await (0, main_1.checkExistenceOfUrl)(url);
+    if (isExist)
+        return res
+            .status(409)
+            .json({ status: 201, message: "Url already exists", data: [] });
     try {
-        const server = yield server_1.default.create({ name, url, status });
+        const server = await server_1.default.create({ name, url, status });
         res
             .status(201)
             .json({ status: 201, message: "Server created", data: server });
@@ -114,7 +112,7 @@ serverHandler.post("/server", (req, res, next) => __awaiter(void 0, void 0, void
     catch (error) {
         console.log(error);
     }
-}));
+});
 /**
  * @swagger
  * /server/{serverId}:
@@ -141,15 +139,15 @@ serverHandler.post("/server", (req, res, next) => __awaiter(void 0, void 0, void
  *      404:
  *        description: Not found
  */
-serverHandler.patch("/server/:serverId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+serverHandler.patch("/server/:serverId", async (req, res, next) => {
     const id = req.params.serverId;
     const name = req.body.name;
     const url = req.body.url;
     const status = req.body.status;
     try {
-        const server = yield server_1.default.findByPk(id);
+        const server = await server_1.default.findByPk(id);
         if (server) {
-            const updatedServer = yield server.update({ name, url, status });
+            const updatedServer = await server.update({ name, url, status });
             res
                 .status(200)
                 .json({ status: 200, message: "Server updated", data: updatedServer });
@@ -161,7 +159,7 @@ serverHandler.patch("/server/:serverId", (req, res, next) => __awaiter(void 0, v
     catch (error) {
         console.log(error);
     }
-}));
+});
 /**
  * @swagger
  * /server/{serverId}:
@@ -185,10 +183,10 @@ serverHandler.patch("/server/:serverId", (req, res, next) => __awaiter(void 0, v
  *      404:
  *        description: Server not found
  */
-serverHandler.delete("/server/:serverId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+serverHandler.delete("/server/:serverId", async (req, res, next) => {
     const id = req.params.serverId;
     try {
-        const server = yield server_1.default.findByPk(id);
+        const server = await server_1.default.findByPk(id);
         if (server) {
             server.destroy();
             res
@@ -202,6 +200,6 @@ serverHandler.delete("/server/:serverId", (req, res, next) => __awaiter(void 0, 
     catch (error) {
         console.log(error);
     }
-}));
+});
 exports.default = serverHandler;
 //# sourceMappingURL=server.js.map
