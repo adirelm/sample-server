@@ -1,4 +1,12 @@
-import { AllowNull, Column, HasMany, Model, Table } from "sequelize-typescript";
+import {
+  AllowNull,
+  Column,
+  HasMany,
+  Model,
+  Table,
+  DataType,
+} from "sequelize-typescript";
+import { Status } from "./history";
 
 import History from "./history";
 
@@ -11,6 +19,9 @@ export default class Server extends Model {
   @AllowNull(false)
   @Column
   url: string;
+
+  @Column(DataType.ENUM(...Object.values(Status)))
+  status: Status;
 
   @HasMany(() => History)
   histroy: History[];

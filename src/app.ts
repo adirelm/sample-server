@@ -2,30 +2,11 @@ import express from "express";
 import bodyParser from "body-parser";
 import { sequelize } from "./helpers/database";
 import swaggerUI from "swagger-ui-express";
-import swaggerJsDoc from "swagger-jsdoc";
+import { specs } from "./helpers/swagger";
 
 import serverHandler from "./routes/server";
 
 const PORT = process.env.PORT ?? 3000;
-
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Sample server",
-      version: "1.0.0",
-      description: "Sample servers on the web",
-    },
-    servers: [
-      {
-        url: "http://localhost:3000",
-      },
-    ],
-  },
-  apis: [__dirname + "/routes/*.js"],
-};
-
-const specs = swaggerJsDoc(options);
 
 const app = express();
 

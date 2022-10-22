@@ -17,13 +17,18 @@ const serverHandler = Router();
  *      properties:
  *        id:
  *          type: number
- *          description: The id of the server
+ *          description: The server's id
  *        name:
  *          type: string
- *          description: The name of the server
+ *          description: The server's name
  *        url:
  *          type: string
- *          description: The url of the server
+ *          description: The server's url
+ *        status:
+ *          type: string
+ *          enum: [success, failure]
+ *          description: The server's status
+ *
  *
  *
  *  parameters:
@@ -95,9 +100,10 @@ serverHandler.get("/servers", async (req, res, next) => {
 serverHandler.post("/server", async (req, res, next) => {
   const name = req.body.name;
   const url = req.body.url;
+  const status = req.body.status;
 
   try {
-    const server = await Server.create({ name, url });
+    const server = await Server.create({ name, url, status });
 
     res
       .status(201)
@@ -138,12 +144,13 @@ serverHandler.patch("/server/:serverId", async (req, res, next) => {
   const id = req.params.serverId;
   const name = req.body.name;
   const url = req.body.url;
+  const status = req.body.status;
 
   try {
     const server = await Server.findByPk(id);
 
     if (server) {
-      const updatedServer = await server.update({ name, url });
+      const updatedServer = await server.update({ name, url, status });
       res
         .status(200)
         .json({ status: 200, message: "Server updated", data: updatedServer });
@@ -203,5 +210,3 @@ serverHandler.delete("/server/:serverId", async (req, res, next) => {
 });
 
 export default serverHandler;
-
-//blabla
