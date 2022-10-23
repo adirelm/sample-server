@@ -97,7 +97,7 @@ serverHandler.get("/servers", async (req, res, next) => {
  *  post:
  *    tags:
  *      - Server
- *    summary: Returns the list of all the servers
+ *    summary: Create new server
  *    requestBody:
  *      required: true
  *      content:
@@ -168,7 +168,7 @@ serverHandler.post(
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/Server'
- *      404:
+ *      400:
  *        description: Bad request
  *      404:
  *        description: Not found

@@ -43,7 +43,7 @@ const historyHandler = (0, express_1.Router)();
  *  get:
  *    tags:
  *      - History
- *    summary: Returns the list of all the servers
+ *    summary: Returns list of all the history records of specific server
  *    parameters:
  *      - $ref: "#/components/parameters/ServerIdPathParam"
  *    responses:
@@ -55,13 +55,15 @@ const historyHandler = (0, express_1.Router)();
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/History'
+ *      400:
+ *        descriptipn: Not found
  */
 historyHandler.get("/history/:serverId", async (req, res, next) => {
     const id = req.params.serverId;
     try {
         const server = await server_1.default.findByPk(id);
         if (!server) {
-            throw new error_1.ApiError(400, "Server not found");
+            throw new error_1.ApiError(404, "Server not found");
         }
         const serverHistory = await server.$get("histroy");
         (0, main_1.renderSuccess)(res, 200, "Successfully fetched history", serverHistory);
