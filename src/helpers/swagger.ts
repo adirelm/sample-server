@@ -6,7 +6,7 @@ const URL =
     ? "https://sample-server-adir.herokuapp.com/"
     : "http://localhost:3000";
 
-const options = {
+const options: swaggerJsDoc.Options = {
   definition: {
     openapi: "3.0.0",
     info: {
@@ -29,4 +29,5 @@ export const validator = OpenApiValidator.middleware({
   apiSpec: specs,
   validateRequests: true,
   validateResponses: false,
+  validateSecurity: false,
 });

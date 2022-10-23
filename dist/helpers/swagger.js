@@ -53,5 +53,6 @@ exports.validator = OpenApiValidator.middleware({
     apiSpec: exports.specs,
     validateRequests: true,
     validateResponses: false,
+    validateSecurity: false,
 });
 //# sourceMappingURL=swagger.js.map
