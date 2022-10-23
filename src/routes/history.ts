@@ -4,6 +4,7 @@ import { ApiError } from "../helpers/error";
 import { renderSuccess } from "../utils/helpers/main";
 
 import Server from "../models/server";
+import History from "../models/history";
 
 const historyHandler = Router();
 
@@ -68,6 +69,58 @@ historyHandler.get("/history/:serverId", async (req, res, next) => {
     }
     const serverHistory = await server.$get("histroy");
     renderSuccess(res, 200, "Successfully fetched history", serverHistory);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @swagger
+ * /history:
+ *  get:
+ *    tags:
+ *      - History
+ *    summary: Returns list of all the history records of all servers
+ *    responses:
+ *      200:
+ *        description: The list of the associated server's history record
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/History'
+ *      400:
+ *        descriptipn: Not found
+ */
+
+historyHandler.get("/history", async (req, res, next) => {
+  try {
+    const history = await History.findAll();
+    renderSuccess(res, 200, "Successfully fetched history", history);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @swagger
+ * /history:
+ *  delete:
+ *    tags:
+ *      - History
+ *    summary: Delete history of all samples
+ *    responses:
+ *      204:
+ *        description: History cleaned
+ *      400:
+ *        descriptipn: Not found
+ */
+
+historyHandler.delete("/history", async (req, res, next) => {
+  try {
+    await History.destroy({ truncate: true });
+    renderSuccess(res, 204, "History cleaned", []);
   } catch (error) {
     next(error);
   }
