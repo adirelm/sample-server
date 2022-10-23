@@ -1,3 +1,4 @@
+import { ApiError } from "../../helpers/error";
 import Server from "../../models/server";
 
 export const HTTP = "http";
@@ -32,4 +33,20 @@ export const renderSuccess = function (
   if (status) {
     res.status(status).json({ status, message, data });
   }
+};
+
+export const restrictEmail = function (admin_mail: string) {
+  const authorizedMail = [
+    "adir4455@gmail.com",
+    "adir@monkeytech.co.il",
+    "idanref@gmail.com",
+    "Kipnissroni@gmail.com",
+  ];
+
+  const authorizedAdminMail = authorizedMail.find(
+    (mail) => admin_mail === mail
+  );
+  if (!authorizedAdminMail) throw new ApiError(400, "Unauthorized email");
+
+  return authorizedAdminMail;
 };

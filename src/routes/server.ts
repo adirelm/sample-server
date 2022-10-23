@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { ApiError } from "../helpers/error";
+import { restrictEmail } from "../utils/helpers/main";
 import { renderSuccess } from "../utils/helpers/main";
 import { handleValidationErrors } from "../helpers/error";
 import { checkExistenceOfUrl } from "../utils/helpers/main";
@@ -121,7 +122,7 @@ serverHandler.post(
       handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
-      const adminMail = req.body.admin_mail;
+      const adminMail = restrictEmail(req.body.admin_mail);
       let url = modifyUrlWithHttpOrHttps(req.body.url);
 
       if (await checkExistenceOfUrl(url)) {
@@ -182,7 +183,7 @@ serverHandler.patch(
       handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
-      const adminMail = req.body.admin_mail;
+      const adminMail = restrictEmail(req.body.admin_mail);
       let url = modifyUrlWithHttpOrHttps(req.body.url);
 
       if (await checkExistenceOfUrl(url)) {
