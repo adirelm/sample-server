@@ -21,12 +21,18 @@ if (process.env.NODE_ENV === "production") {
         rejectUnauthorized: false,
       },
     },
+    define: {
+      underscored: true,
+    },
     models: [Server, History],
   });
 } else {
   sequelize = new Sequelize(serverName, userName, password, {
     host: host,
     dialect: "postgres",
+    define: {
+      underscored: true,
+    },
     models: [Server, History],
   });
 }

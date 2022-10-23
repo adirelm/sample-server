@@ -32,6 +32,11 @@ __decorate([
     __metadata("design:type", String)
 ], Server.prototype, "status", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], Server.prototype, "admin_mail", void 0);
+__decorate([
     (0, sequelize_typescript_1.HasMany)(() => history_2.default),
     __metadata("design:type", Array)
 ], Server.prototype, "histroy", void 0);

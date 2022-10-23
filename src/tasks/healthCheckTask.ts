@@ -1,7 +1,7 @@
 import { Status as ServerStatus } from "../models/history";
+import { sendMailToAdmin } from "../helpers/email";
 
 import Server from "../models/server";
-import History from "../models/history";
 
 const CONDITION_TO_SUCCESS = 5;
 const CONDITION_TO_FAILURE = 3;
@@ -25,10 +25,28 @@ export const healthCheckTask = async function () {
           : failureCounter++;
       });
 
-      if (successCounter === CONDITION_TO_SUCCESS) {
+      if (
+        successCounter === CONDITION_TO_SUCCESS &&
+        server.status !== ServerStatus.SUCCESS
+      ) {
         await server.update({ status: ServerStatus.SUCCESS });
-      } else if (failureCounter === CONDITION_TO_FAILURE) {
+        await sendMailToAdmin(
+          server.name,
+          server.url,
+          server.status,
+          server.admin_mail
+        );
+      } else if (
+        failureCounter === CONDITION_TO_FAILURE &&
+        server.status !== ServerStatus.FAILURE
+      ) {
         await server.update({ status: ServerStatus.FAILURE });
+        await sendMailToAdmin(
+          server.name,
+          server.url,
+          server.status,
+          server.admin_mail
+        );
       }
     });
   } catch (err) {

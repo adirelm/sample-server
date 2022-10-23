@@ -16,9 +16,7 @@ export const handleValidationErrors = function (req: any) {
   if (!errors.isEmpty()) {
     const firstError = errors.array()[0];
     const message = firstError.msg.toLowerCase();
-    const param =
-      firstError.param[0].toUpperCase() +
-      firstError.param.slice(1, firstError.param.length);
+    const param = firstError.param.toLowerCase();
 
     throw new ApiError(400, `${param} ${message}`);
   }

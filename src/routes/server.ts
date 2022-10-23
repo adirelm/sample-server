@@ -27,6 +27,9 @@ const serverHandler = Router();
  *        url:
  *          type: string
  *          description: The server's url
+ *        admin_mail:
+ *          type: string
+ *          description: The server's admin mail
  *        status:
  *          type: string
  *          enum: [success, failure]
@@ -44,6 +47,9 @@ const serverHandler = Router();
  *        url:
  *          type: string
  *          description: The server's url
+ *        admin_mail:
+ *          type: string
+ *          description: The server's admin mail
  *
  *  parameters:
  *    ServerIdPathParam:
@@ -108,19 +114,25 @@ serverHandler.get("/servers", async (req, res, next) => {
 
 serverHandler.post(
   "/server",
-  [body("url").isURL()],
+  [body("url").isURL(), body("admin_mail").isEmail()],
   async (req: any, res: any, next: any) => {
     try {
       handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
+      const adminMail = req.body.admin_mail;
       let url = modifyUrlWithHttpOrHttps(req.body.url);
 
       if (await checkExistenceOfUrl(url)) {
         throw new ApiError(400, "Url already exists");
       }
 
-      const server = await Server.create({ name, url, status });
+      const server = await Server.create({
+        name,
+        url,
+        status,
+        admin_mail: adminMail,
+      });
       renderSuccess(res, 201, "Server created", server);
     } catch (error) {
       next(error);
@@ -157,7 +169,7 @@ serverHandler.post(
 
 serverHandler.patch(
   "/server/:serverId",
-  [body("url").isURL()],
+  [body("url").isURL(), body("admin_mail").isEmail()],
   async (req: any, res: any, next: any) => {
     try {
       const id = req.params.serverId;
@@ -169,13 +181,19 @@ serverHandler.patch(
       handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
+      const adminMail = req.body.admin_mail;
       let url = modifyUrlWithHttpOrHttps(req.body.url);
 
       if (await checkExistenceOfUrl(url)) {
         throw new ApiError(400, "Url already exists");
       }
 
-      const record = await server.update({ name, url, status });
+      const record = await server.update({
+        name,
+        url,
+        status,
+        admin_mail: adminMail,
+      });
       renderSuccess(res, 200, "Server updated", record);
     } catch (error) {
       next(error);

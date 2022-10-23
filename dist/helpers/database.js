@@ -22,6 +22,9 @@ if (process.env.NODE_ENV === "production") {
                 rejectUnauthorized: false,
             },
         },
+        define: {
+            underscored: true,
+        },
         models: [server_1.default, history_1.default],
     });
 }
@@ -29,6 +32,9 @@ else {
     sequelize = new sequelize_typescript_1.Sequelize(serverName, userName, password, {
         host: host,
         dialect: "postgres",
+        define: {
+            underscored: true,
+        },
         models: [server_1.default, history_1.default],
     });
 }

@@ -23,6 +23,10 @@ export default class Server extends Model {
   @Column(DataType.ENUM(...Object.values(Status)))
   status: Status;
 
+  @AllowNull(false)
+  @Column
+  admin_mail: string;
+
   @HasMany(() => History)
   histroy: History[];
 }

@@ -6,6 +6,7 @@ import { ApiError } from "./helpers/error";
 import swaggerUI from "swagger-ui-express";
 import { validator } from "./helpers/swagger";
 import { schedulingTasks } from "./helpers/cron";
+import { sendMailToAdmin } from "./helpers/email";
 
 import serverHandler from "./routes/server";
 
@@ -28,7 +29,7 @@ app.use((err: ApiError, req: any, res: any, next: any) => {
 
 app.listen({ port: PORT }, async () => {
   try {
-    // await sequelize.sync({ force: true });
+    await sequelize.sync({ force: true });
     await sequelize.authenticate();
     schedulingTasks.start();
     console.log("Listening on port " + PORT);

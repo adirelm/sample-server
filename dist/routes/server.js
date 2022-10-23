@@ -29,6 +29,9 @@ const serverHandler = (0, express_1.Router)();
  *        url:
  *          type: string
  *          description: The server's url
+ *        admin_mail:
+ *          type: string
+ *          description: The server's admin mail
  *        status:
  *          type: string
  *          enum: [success, failure]
@@ -46,6 +49,9 @@ const serverHandler = (0, express_1.Router)();
  *        url:
  *          type: string
  *          description: The server's url
+ *        admin_mail:
+ *          type: string
+ *          description: The server's admin mail
  *
  *  parameters:
  *    ServerIdPathParam:
@@ -105,16 +111,22 @@ serverHandler.get("/servers", async (req, res, next) => {
  *              items:
  *                $ref: '#/components/schemas/Server'
  */
-serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL()], async (req, res, next) => {
+serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
     try {
         (0, error_2.handleValidationErrors)(req);
         const name = req.body.name;
         const status = req.body.status;
+        const adminMail = req.body.admin_mail;
         let url = (0, main_3.modifyUrlWithHttpOrHttps)(req.body.url);
         if (await (0, main_2.checkExistenceOfUrl)(url)) {
             throw new error_1.ApiError(400, "Url already exists");
         }
-        const server = await server_1.default.create({ name, url, status });
+        const server = await server_1.default.create({
+            name,
+            url,
+            status,
+            admin_mail: adminMail,
+        });
         (0, main_1.renderSuccess)(res, 201, "Server created", server);
     }
     catch (error) {
@@ -147,7 +159,7 @@ serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL()], as
  *      404:
  *        description: Not found
  */
-serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").isURL()], async (req, res, next) => {
+serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
     try {
         const id = req.params.serverId;
         const server = await server_1.default.findByPk(id);
@@ -157,11 +169,17 @@ serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").i
         (0, error_2.handleValidationErrors)(req);
         const name = req.body.name;
         const status = req.body.status;
+        const adminMail = req.body.admin_mail;
         let url = (0, main_3.modifyUrlWithHttpOrHttps)(req.body.url);
         if (await (0, main_2.checkExistenceOfUrl)(url)) {
             throw new error_1.ApiError(400, "Url already exists");
         }
-        const record = await server.update({ name, url, status });
+        const record = await server.update({
+            name,
+            url,
+            status,
+            admin_mail: adminMail,
+        });
         (0, main_1.renderSuccess)(res, 200, "Server updated", record);
     }
     catch (error) {
