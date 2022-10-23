@@ -4,7 +4,7 @@ import { sampleServerTask } from "../tasks/sampleServerTask";
 import { deleteAllHistoryTask } from "../tasks/deleteAllHistoryTask";
 
 const schedulingTasksTwoMinutes = cron.schedule(
-  "*/2 * * * * *",
+  "*/2 * * * *",
   async () => {
     await sampleServerTask();
     await healthCheckTask();
