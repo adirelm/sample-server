@@ -113,6 +113,8 @@ serverHandler.get("/servers", async (req, res, next) => {
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/Server'
+ *      400:
+ *        description: Bad request
  */
 serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
     try {
@@ -161,6 +163,8 @@ serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL(), (0,
  *              items:
  *                $ref: '#/components/schemas/Server'
  *      404:
+ *        description: Bad request
+ *      404:
  *        description: Not found
  */
 serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
@@ -168,7 +172,7 @@ serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").i
         const id = req.params.serverId;
         const server = await server_1.default.findByPk(id);
         if (!server) {
-            throw new error_1.ApiError(400, "Server not found");
+            throw new error_1.ApiError(404, "Server not found");
         }
         (0, error_2.handleValidationErrors)(req);
         const name = req.body.name;
@@ -202,7 +206,7 @@ serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").i
  *
  *
  *    responses:
- *      200:
+ *      204:
  *        description: Server deleted
  *        content:
  *          application/json:
@@ -218,7 +222,7 @@ serverHandler.delete("/server/:serverId", async (req, res, next) => {
     try {
         const server = await server_1.default.findByPk(id);
         if (!server) {
-            throw new error_1.ApiError(400, "Server not found");
+            throw new error_1.ApiError(404, "Server not found");
         }
         await server.destroy();
         (0, main_2.renderSuccess)(res, 204, "Server deleted", server);
