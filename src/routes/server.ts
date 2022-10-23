@@ -84,6 +84,7 @@ const serverHandler = Router();
 
 serverHandler.get("/servers", async (req, res, next) => {
   try {
+    const auth = req.header("x-auth-token");
     const servers = await Server.findAll();
     renderSuccess(res, 200, "Successfully fectched servers", servers);
   } catch (error) {

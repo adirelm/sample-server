@@ -81,7 +81,6 @@ historyHandler.get("/history/:serverId", async (req, res, next) => {
  *  get:
  *    tags:
  *      - History
- *    security: []
  *    summary: Returns list of all the history records of all servers
  *    responses:
  *      200:
@@ -98,8 +97,6 @@ historyHandler.get("/history/:serverId", async (req, res, next) => {
 
 historyHandler.get("/history", async (req, res, next) => {
   try {
-    const authHeader = req.header("x-auth-token");
-    console.log(authHeader);
     const history = await History.findAll();
     renderSuccess(res, 200, "Successfully fetched history", history);
   } catch (error) {

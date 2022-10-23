@@ -84,6 +84,7 @@ const serverHandler = (0, express_1.Router)();
  */
 serverHandler.get("/servers", async (req, res, next) => {
     try {
+        const auth = req.header("x-auth-token");
         const servers = await server_1.default.findAll();
         (0, main_2.renderSuccess)(res, 200, "Successfully fectched servers", servers);
     }
