@@ -1,5 +1,5 @@
 import { Status as ServerStatus } from "../models/history";
-import { sendMailToAdmin } from "../helpers/email";
+import { sendMailToAdminStatusChanged } from "../helpers/email";
 
 import Server from "../models/server";
 
@@ -30,7 +30,7 @@ export const healthCheckTask = async function () {
         server.status !== ServerStatus.SUCCESS
       ) {
         await server.update({ status: ServerStatus.SUCCESS });
-        await sendMailToAdmin(
+        await sendMailToAdminStatusChanged(
           server.name,
           server.url,
           server.status,
@@ -41,7 +41,7 @@ export const healthCheckTask = async function () {
         server.status !== ServerStatus.FAILURE
       ) {
         await server.update({ status: ServerStatus.FAILURE });
-        await sendMailToAdmin(
+        await sendMailToAdminStatusChanged(
           server.name,
           server.url,
           server.status,

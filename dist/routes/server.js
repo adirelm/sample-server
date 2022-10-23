@@ -8,6 +8,7 @@ const express_validator_1 = require("express-validator");
 const error_1 = require("../helpers/error");
 const main_1 = require("../utils/helpers/main");
 const main_2 = require("../utils/helpers/main");
+const email_1 = require("../helpers/email");
 const error_2 = require("../helpers/error");
 const main_3 = require("../utils/helpers/main");
 const main_4 = require("../utils/helpers/main");
@@ -123,6 +124,7 @@ serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL(), (0,
         if (await (0, main_3.checkExistenceOfUrl)(url)) {
             throw new error_1.ApiError(400, "Url already exists");
         }
+        await (0, email_1.sendMailToAdminWelcome)(name, url, adminMail);
         const server = await server_1.default.create({
             name,
             url,

@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import { ApiError } from "../helpers/error";
 import { restrictEmail } from "../utils/helpers/main";
 import { renderSuccess } from "../utils/helpers/main";
+import { sendMailToAdminWelcome } from "../helpers/email";
 import { handleValidationErrors } from "../helpers/error";
 import { checkExistenceOfUrl } from "../utils/helpers/main";
 import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
@@ -128,7 +129,7 @@ serverHandler.post(
       if (await checkExistenceOfUrl(url)) {
         throw new ApiError(400, "Url already exists");
       }
-
+      await sendMailToAdminWelcome(name, url, adminMail);
       const server = await Server.create({
         name,
         url,

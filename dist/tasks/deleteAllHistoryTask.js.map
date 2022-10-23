@@ -1,0 +1,1 @@
+{"version":3,"file":"deleteAllHistoryTask.js","sourceRoot":"","sources":["../../src/tasks/deleteAllHistoryTask.ts"],"names":[],"mappings":";;;;;;AAAA,gEAAwC;AAEjC,MAAM,oBAAoB,GAAG,KAAK;IACvC,IAAI;QACF,MAAM,iBAAO,CAAC,OAAO,CAAC,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,CAAC;KAC3C;IAAC,OAAO,KAAK,EAAE;QACd,OAAO,CAAC,GAAG,CAAC,KAAK,CAAC,CAAC;KACpB;AACH,CAAC,CAAC;AANW,QAAA,oBAAoB,wBAM/B"}

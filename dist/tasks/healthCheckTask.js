@@ -27,12 +27,12 @@ const healthCheckTask = async function () {
             if (successCounter === CONDITION_TO_SUCCESS &&
                 server.status !== history_1.Status.SUCCESS) {
                 await server.update({ status: history_1.Status.SUCCESS });
-                await (0, email_1.sendMailToAdmin)(server.name, server.url, server.status, server.admin_mail);
+                await (0, email_1.sendMailToAdminStatusChanged)(server.name, server.url, server.status, server.admin_mail);
             }
             else if (failureCounter === CONDITION_TO_FAILURE &&
                 server.status !== history_1.Status.FAILURE) {
                 await server.update({ status: history_1.Status.FAILURE });
-                await (0, email_1.sendMailToAdmin)(server.name, server.url, server.status, server.admin_mail);
+                await (0, email_1.sendMailToAdminStatusChanged)(server.name, server.url, server.status, server.admin_mail);
             }
         });
     }
