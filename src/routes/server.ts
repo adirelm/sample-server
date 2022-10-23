@@ -113,6 +113,8 @@ serverHandler.get("/servers", async (req, res, next) => {
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/Server'
+ *      400:
+ *        description: Bad request
  */
 
 serverHandler.post(
@@ -167,6 +169,8 @@ serverHandler.post(
  *              items:
  *                $ref: '#/components/schemas/Server'
  *      404:
+ *        description: Bad request
+ *      404:
  *        description: Not found
  */
 
@@ -178,7 +182,7 @@ serverHandler.patch(
       const id = req.params.serverId;
       const server = await Server.findByPk(id);
       if (!server) {
-        throw new ApiError(400, "Server not found");
+        throw new ApiError(404, "Server not found");
       }
 
       handleValidationErrors(req);
@@ -216,7 +220,7 @@ serverHandler.patch(
  *
  *
  *    responses:
- *      200:
+ *      204:
  *        description: Server deleted
  *        content:
  *          application/json:
