@@ -22,6 +22,9 @@ app.use("/api", swaggerUI.serve, swaggerUI.setup(specs));
 app.use(validator); // OpenApiValidator
 app.use(serverHandler);
 app.use(historyHandler);
+app.get("/", (req: any, res: any, next: any) => {
+  res.redirect("/api");
+});
 
 app.use((err: ApiError, req: any, res: any, next: any) => {
   res

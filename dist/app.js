@@ -21,6 +21,9 @@ app.use("/api", swagger_ui_express_1.default.serve, swagger_ui_express_1.default
 app.use(swagger_2.validator); // OpenApiValidator
 app.use(server_1.default);
 app.use(history_1.default);
+app.get("/", (req, res, next) => {
+    res.redirect("/api");
+});
 app.use((err, req, res, next) => {
     res
         .status(err.status || 500)
