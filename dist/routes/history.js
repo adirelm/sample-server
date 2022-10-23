@@ -37,6 +37,7 @@ const historyHandler = (0, express_1.Router)();
  *      required: true
  *      schema:
  *        type: number
+ *
  */
 /**
  * @swagger
@@ -57,7 +58,7 @@ const historyHandler = (0, express_1.Router)();
  *              items:
  *                $ref: '#/components/schemas/History'
  *      400:
- *        descriptipn: Not found
+ *        description: Not found
  */
 historyHandler.get("/history/:serverId", async (req, res, next) => {
     const id = req.params.serverId;
@@ -79,6 +80,7 @@ historyHandler.get("/history/:serverId", async (req, res, next) => {
  *  get:
  *    tags:
  *      - History
+ *    security: []
  *    summary: Returns list of all the history records of all servers
  *    responses:
  *      200:
@@ -90,10 +92,12 @@ historyHandler.get("/history/:serverId", async (req, res, next) => {
  *              items:
  *                $ref: '#/components/schemas/History'
  *      400:
- *        descriptipn: Not found
+ *        description: Not found
  */
 historyHandler.get("/history", async (req, res, next) => {
     try {
+        const authHeader = req.header("x-auth-token");
+        console.log(authHeader);
         const history = await history_1.default.findAll();
         (0, main_1.renderSuccess)(res, 200, "Successfully fetched history", history);
     }
@@ -112,7 +116,7 @@ historyHandler.get("/history", async (req, res, next) => {
  *      204:
  *        description: History cleaned
  *      400:
- *        descriptipn: Not found
+ *        description: Not found
  */
 historyHandler.delete("/history", async (req, res, next) => {
     try {

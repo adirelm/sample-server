@@ -45,6 +45,16 @@ const options = {
                 url: URL,
             },
         ],
+        components: {
+            securitySchemes: {
+                token: {
+                    type: "apiKey",
+                    in: "header",
+                    name: "X-Auth-Token",
+                },
+            },
+        },
+        security: [{ token: [] }],
     },
     apis: [__dirname + "../../routes/*.js"],
 };
