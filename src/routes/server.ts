@@ -239,7 +239,7 @@ serverHandler.delete("/server/:serverId", async (req, res, next) => {
     const server = await Server.findByPk(id);
 
     if (!server) {
-      throw new ApiError(400, "Server not found");
+      throw new ApiError(404, "Server not found");
     }
     await server.destroy();
     renderSuccess(res, 204, "Server deleted", server);
