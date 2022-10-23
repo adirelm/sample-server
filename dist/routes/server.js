@@ -22,6 +22,7 @@ const serverHandler = (0, express_1.Router)();
  *      required:
  *        - name
  *        - url
+ *        - admin_mail
  *      properties:
  *        name:
  *          type: string

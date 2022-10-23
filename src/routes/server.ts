@@ -20,6 +20,7 @@ const serverHandler = Router();
  *      required:
  *        - name
  *        - url
+ *        - admin_mail
  *      properties:
  *        name:
  *          type: string

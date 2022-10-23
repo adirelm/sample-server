@@ -1,0 +1,74 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const error_1 = require("../helpers/error");
+const main_1 = require("../utils/helpers/main");
+const server_1 = __importDefault(require("../models/server"));
+const historyHandler = (0, express_1.Router)();
+/**
+ * @swagger
+ * components:
+ *
+ *  schemas:
+ *    History:
+ *      type: object
+ *      required:
+ *        - status
+ *        - server_id
+ *      properties:
+ *        status:
+ *          type: string
+ *          enum: [success, failure]
+ *          description: The server's sample record status
+ *        server_id:
+ *          type: number
+ *          description: The server's associated id
+ *
+ *
+ *  parameters:
+ *    ServerIdPathParam:
+ *      name: serverId
+ *      in: path
+ *      description: Server id
+ *      required: true
+ *      schema:
+ *        type: number
+ */
+/**
+ * @swagger
+ * /history/{serverId}:
+ *  get:
+ *    tags:
+ *      - History
+ *    summary: Returns the list of all the servers
+ *    parameters:
+ *      - $ref: "#/components/parameters/ServerIdPathParam"
+ *    responses:
+ *      200:
+ *        description: The list of the associated server's history record
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/History'
+ */
+historyHandler.get("/history/:serverId", async (req, res, next) => {
+    const id = req.params.serverId;
+    try {
+        const server = await server_1.default.findByPk(id);
+        if (!server) {
+            throw new error_1.ApiError(400, "Server not found");
+        }
+        const serverHistory = await server.$get("histroy");
+        (0, main_1.renderSuccess)(res, 200, "Successfully fetched history", serverHistory);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.default = historyHandler;
+//# sourceMappingURL=history.js.map

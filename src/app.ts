@@ -6,9 +6,9 @@ import { ApiError } from "./helpers/error";
 import swaggerUI from "swagger-ui-express";
 import { validator } from "./helpers/swagger";
 import { schedulingTasks } from "./helpers/cron";
-import { sendMailToAdmin } from "./helpers/email";
 
 import serverHandler from "./routes/server";
+import historyHandler from "./routes/history";
 
 const PORT = process.env.PORT ?? 3000;
 
@@ -20,6 +20,7 @@ app.use(bodyParser.json());
 app.use("/api", swaggerUI.serve, swaggerUI.setup(specs));
 app.use(validator); // OpenApiValidator
 app.use(serverHandler);
+app.use(historyHandler);
 
 app.use((err: ApiError, req: any, res: any, next: any) => {
   res
