@@ -21,3 +21,9 @@ export const handleValidationErrors = function (req: any) {
     throw new ApiError(400, `${param} ${message}`);
   }
 };
+
+export const handleErrorMessage = function (error: any): string {
+  return error?.original?.detail
+    ? `${error.message}: ${error.original.detail}`
+    : error.message;
+};

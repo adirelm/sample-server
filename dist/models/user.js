@@ -14,42 +14,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Status = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
-const user_1 = __importDefault(require("./user"));
 const server_1 = __importDefault(require("./server"));
+const history_1 = __importDefault(require("./history"));
 var Status;
 (function (Status) {
-    Status["SUCCESS"] = "success";
-    Status["FAILURE"] = "failure";
+    Status["PENDING"] = "pending";
+    Status["APPROVED"] = "approved";
 })(Status = exports.Status || (exports.Status = {}));
-let History = class History extends sequelize_typescript_1.Model {
+let User = class User extends sequelize_typescript_1.Model {
 };
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
+    sequelize_typescript_1.Unique,
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], User.prototype, "username", void 0);
+__decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], User.prototype, "password", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], User.prototype, "firstName", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], User.prototype, "lastName", void 0);
+__decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
+    sequelize_typescript_1.Unique,
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], User.prototype, "email", void 0);
+__decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ENUM(...Object.values(Status))),
     __metadata("design:type", String)
-], History.prototype, "status", void 0);
+], User.prototype, "status", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => server_1.default),
-    __metadata("design:type", server_1.default)
-], History.prototype, "server", void 0);
+    (0, sequelize_typescript_1.HasMany)(() => server_1.default),
+    __metadata("design:type", Array)
+], User.prototype, "servers", void 0);
 __decorate([
-    (0, sequelize_typescript_1.AllowNull)(false),
-    (0, sequelize_typescript_1.ForeignKey)(() => server_1.default),
-    sequelize_typescript_1.Column,
-    __metadata("design:type", Number)
-], History.prototype, "serverId", void 0);
-__decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => user_1.default),
-    __metadata("design:type", user_1.default)
-], History.prototype, "user", void 0);
-__decorate([
-    (0, sequelize_typescript_1.AllowNull)(false),
-    (0, sequelize_typescript_1.ForeignKey)(() => user_1.default),
-    sequelize_typescript_1.Column,
-    __metadata("design:type", Number)
-], History.prototype, "userId", void 0);
-History = __decorate([
+    (0, sequelize_typescript_1.HasMany)(() => history_1.default),
+    __metadata("design:type", Array)
+], User.prototype, "history", void 0);
+User = __decorate([
     sequelize_typescript_1.Table
-], History);
-exports.default = History;
-//# sourceMappingURL=history.js.map
+], User);
+exports.default = User;
+//# sourceMappingURL=user.js.map

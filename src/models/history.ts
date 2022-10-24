@@ -8,6 +8,7 @@ import {
   Table,
 } from "sequelize-typescript";
 
+import User from "./user";
 import Server from "./server";
 
 export enum Status {
@@ -20,11 +21,19 @@ export default class History extends Model {
   @Column(DataType.ENUM(...Object.values(Status)))
   status: Status;
 
+  @BelongsTo(() => Server)
+  server: Server;
+
   @AllowNull(false)
   @ForeignKey(() => Server)
   @Column
   serverId: number;
 
-  @BelongsTo(() => Server)
-  server: Server;
+  @BelongsTo(() => User)
+  user: User;
+
+  @AllowNull(false)
+  @ForeignKey(() => User)
+  @Column
+  userId: number;
 }

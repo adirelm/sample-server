@@ -5,7 +5,6 @@ import { ApiError } from "../helpers/error";
 import { restrictEmail } from "../utils/helpers/main";
 import { renderSuccess } from "../utils/helpers/main";
 import { handleValidationErrors } from "../helpers/error";
-import { checkExistenceOfUrl } from "../utils/helpers/main";
 import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
 
 import Server from "../models/server";
@@ -50,9 +49,6 @@ const serverHandler = Router();
  *        url:
  *          type: string
  *          description: The server's url
- *        admin_mail:
- *          type: string
- *          description: The server's admin mail
  *
  *  parameters:
  *    ServerIdPathParam:
@@ -122,23 +118,21 @@ serverHandler.get("/servers", async (req, res, next) => {
 serverHandler.post(
   "/server",
   isAuth,
-  [body("url").isURL(), body("admin_mail").isEmail()],
+  [body("url").isURL()],
   async (req: any, res: any, next: any) => {
     try {
       handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
-      const adminMail = restrictEmail(req.body.admin_mail);
+      const adminMail = restrictEmail(req.modelMail);
       let url = modifyUrlWithHttpOrHttps(req.body.url);
 
-      if (await checkExistenceOfUrl(url)) {
-        throw new ApiError(400, "Url already exists");
-      }
       const server = await Server.create({
         name,
         url,
         status,
-        admin_mail: adminMail,
+        adminMail,
+        adminId: req.modelId,
       });
       renderSuccess(res, 201, "Server created", server);
     } catch (error) {
@@ -181,7 +175,7 @@ serverHandler.post(
 serverHandler.patch(
   "/server/:serverId",
   isAuth,
-  [body("url").isURL(), body("admin_mail").isEmail()],
+  [body("url").isURL()],
   async (req: any, res: any, next: any) => {
     try {
       const id = req.params.serverId;
@@ -193,18 +187,14 @@ serverHandler.patch(
       handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
-      const adminMail = restrictEmail(req.body.admin_mail);
+      const adminMail = restrictEmail(req.modelMail);
       let url = modifyUrlWithHttpOrHttps(req.body.url);
-
-      if (await checkExistenceOfUrl(url)) {
-        throw new ApiError(400, "Url already exists");
-      }
 
       const record = await server.update({
         name,
         url,
         status,
-        admin_mail: adminMail,
+        adminMail,
       });
       renderSuccess(res, 200, "Server updated", record);
     } catch (error) {

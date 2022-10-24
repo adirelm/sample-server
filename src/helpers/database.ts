@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize-typescript";
 import dotenv from "dotenv";
 dotenv.config();
 
+import User from "../models/user";
 import Server from "../models/server";
 import History from "../models/history";
 
@@ -24,7 +25,7 @@ if (process.env.NODE_ENV === "production") {
     define: {
       underscored: true,
     },
-    models: [Server, History],
+    models: [Server, History, User],
   });
 } else {
   sequelize = new Sequelize(serverName, userName, password, {
@@ -33,7 +34,7 @@ if (process.env.NODE_ENV === "production") {
     define: {
       underscored: true,
     },
-    models: [Server, History],
+    models: [Server, History, User],
   });
 }
 

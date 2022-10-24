@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleValidationErrors = exports.ApiError = void 0;
+exports.handleErrorMessage = exports.handleValidationErrors = exports.ApiError = void 0;
 const express_validator_1 = require("express-validator");
 class ApiError extends Error {
     constructor(status, message, data = {}) {
@@ -20,4 +20,11 @@ const handleValidationErrors = function (req) {
     }
 };
 exports.handleValidationErrors = handleValidationErrors;
+const handleErrorMessage = function (error) {
+    var _a;
+    return ((_a = error === null || error === void 0 ? void 0 : error.original) === null || _a === void 0 ? void 0 : _a.detail)
+        ? `${error.message}: ${error.original.detail}`
+        : error.message;
+};
+exports.handleErrorMessage = handleErrorMessage;
 //# sourceMappingURL=error.js.map

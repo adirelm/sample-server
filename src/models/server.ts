@@ -7,11 +7,15 @@ import {
   DataType,
   AfterSave,
   AfterCreate,
+  ForeignKey,
+  BelongsTo,
+  Unique,
 } from "sequelize-typescript";
 import { Status } from "./history";
 import { sendMailToAdminWelcome } from "../helpers/email";
 import { sendMailToAdminStatusChanged } from "../helpers/email";
 
+import User from "./user";
 import History from "./history";
 
 @Table
@@ -21,6 +25,7 @@ export default class Server extends Model {
   name: string;
 
   @AllowNull(false)
+  @Unique
   @Column
   url: string;
 
@@ -29,10 +34,17 @@ export default class Server extends Model {
 
   @AllowNull(false)
   @Column
-  admin_mail: string;
+  adminMail: string;
 
   @HasMany(() => History)
   histroy: History[];
+
+  @BelongsTo(() => User)
+  users: User[];
+
+  @Column
+  @ForeignKey(() => User)
+  adminId: number;
 
   @AfterSave
   static async sendStatusMail(instance: Server, options: any) {
@@ -41,7 +53,7 @@ export default class Server extends Model {
         instance.name,
         instance.url,
         instance.status,
-        instance.admin_mail
+        instance.adminMail
       );
     }
   }
@@ -51,7 +63,7 @@ export default class Server extends Model {
     await sendMailToAdminWelcome(
       instance.name,
       instance.url,
-      instance.admin_mail
+      instance.adminMail
     );
   }
 }

@@ -16,15 +16,16 @@ const sequelize_typescript_1 = require("sequelize-typescript");
 const history_1 = require("./history");
 const email_1 = require("../helpers/email");
 const email_2 = require("../helpers/email");
+const user_1 = __importDefault(require("./user"));
 const history_2 = __importDefault(require("./history"));
 let Server = class Server extends sequelize_typescript_1.Model {
     static async sendStatusMail(instance, options) {
         if (instance.changed("status")) {
-            await (0, email_2.sendMailToAdminStatusChanged)(instance.name, instance.url, instance.status, instance.admin_mail);
+            await (0, email_2.sendMailToAdminStatusChanged)(instance.name, instance.url, instance.status, instance.adminMail);
         }
     }
     static async sendWelcomeMail(instance, options) {
-        await (0, email_1.sendMailToAdminWelcome)(instance.name, instance.url, instance.admin_mail);
+        await (0, email_1.sendMailToAdminWelcome)(instance.name, instance.url, instance.adminMail);
     }
 };
 __decorate([
@@ -34,6 +35,7 @@ __decorate([
 ], Server.prototype, "name", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
+    sequelize_typescript_1.Unique,
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
 ], Server.prototype, "url", void 0);
@@ -45,11 +47,20 @@ __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], Server.prototype, "admin_mail", void 0);
+], Server.prototype, "adminMail", void 0);
 __decorate([
     (0, sequelize_typescript_1.HasMany)(() => history_2.default),
     __metadata("design:type", Array)
 ], Server.prototype, "histroy", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => user_1.default),
+    __metadata("design:type", Array)
+], Server.prototype, "users", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    (0, sequelize_typescript_1.ForeignKey)(() => user_1.default),
+    __metadata("design:type", Number)
+], Server.prototype, "adminId", void 0);
 __decorate([
     sequelize_typescript_1.AfterSave,
     __metadata("design:type", Function),

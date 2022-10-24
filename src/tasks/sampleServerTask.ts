@@ -19,14 +19,21 @@ export const sampleServerTask = async function () {
       const responseTime = (endTime - startTime) / 1000;
 
       if (response.statusText === "OK" && responseTime < TIME_FOR_FAILURE) {
-        await server.$create("histroy", { status: ServerStatus.SUCCESS });
+        await server.$create("histroy", {
+          status: ServerStatus.SUCCESS,
+          userId: server.adminId,
+        });
       } else {
-        await server.$create("history", { status: ServerStatus.FAILURE });
+        await server.$create("history", {
+          status: ServerStatus.FAILURE,
+          userId: server.adminId,
+        });
       }
     } catch (error) {
       await History.create({
         status: ServerStatus.FAILURE,
         serverId: server.id,
+        userId: server.adminId,
       });
     }
   });

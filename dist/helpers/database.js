@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+const user_1 = __importDefault(require("../models/user"));
 const server_1 = __importDefault(require("../models/server"));
 const history_1 = __importDefault(require("../models/history"));
 const serverName = process.env.SERVER_NAME;
@@ -25,7 +26,7 @@ if (process.env.NODE_ENV === "production") {
         define: {
             underscored: true,
         },
-        models: [server_1.default, history_1.default],
+        models: [server_1.default, history_1.default, user_1.default],
     });
 }
 else {
@@ -35,7 +36,7 @@ else {
         define: {
             underscored: true,
         },
-        models: [server_1.default, history_1.default],
+        models: [server_1.default, history_1.default, user_1.default],
     });
 }
 exports.default = sequelize;

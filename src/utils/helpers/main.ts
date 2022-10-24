@@ -16,14 +16,6 @@ export const modifyUrlWithHttpOrHttps = function (url: string): string {
   return modifiedUrl;
 };
 
-export const checkExistenceOfUrl = async function (
-  url: string
-): Promise<boolean> {
-  const record = await Server.findOne({ where: { url } });
-
-  return !!record;
-};
-
 export const renderSuccess = function (
   res: any,
   status: number,
