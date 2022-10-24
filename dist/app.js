@@ -10,6 +10,7 @@ const swagger_1 = require("./helpers/swagger");
 const database_1 = __importDefault(require("./helpers/database"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const cron_1 = require("./helpers/cron");
+const auth_1 = __importDefault(require("./routes/auth"));
 const server_1 = __importDefault(require("./routes/server"));
 const history_1 = __importDefault(require("./routes/history"));
 const swagger_2 = __importDefault(require("./routes/swagger"));
@@ -22,6 +23,7 @@ app.use("/api", swagger_ui_express_1.default.serve, swagger_ui_express_1.default
 app.use(server_1.default);
 app.use(history_1.default);
 app.use(swagger_2.default);
+app.use(auth_1.default);
 app.use((err, req, res, next) => {
     res
         .status(err.status || 500)

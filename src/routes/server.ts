@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { body } from "express-validator";
+import { isAuth } from "../middleware/auth";
 import { ApiError } from "../helpers/error";
 import { restrictEmail } from "../utils/helpers/main";
 import { renderSuccess } from "../utils/helpers/main";
-import { sendMailToAdminWelcome } from "../helpers/email";
 import { handleValidationErrors } from "../helpers/error";
 import { checkExistenceOfUrl } from "../utils/helpers/main";
 import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
@@ -84,7 +84,6 @@ const serverHandler = Router();
 
 serverHandler.get("/servers", async (req, res, next) => {
   try {
-    const auth = req.header("x-auth-token");
     const servers = await Server.findAll();
     renderSuccess(res, 200, "Successfully fectched servers", servers);
   } catch (error) {
@@ -116,10 +115,13 @@ serverHandler.get("/servers", async (req, res, next) => {
  *                $ref: '#/components/schemas/Server'
  *      400:
  *        description: Bad request
+ *      401:
+ *        description: Unauthorized
  */
 
 serverHandler.post(
   "/server",
+  isAuth,
   [body("url").isURL(), body("admin_mail").isEmail()],
   async (req: any, res: any, next: any) => {
     try {
@@ -132,7 +134,6 @@ serverHandler.post(
       if (await checkExistenceOfUrl(url)) {
         throw new ApiError(400, "Url already exists");
       }
-      await sendMailToAdminWelcome(name, url, adminMail);
       const server = await Server.create({
         name,
         url,
@@ -171,12 +172,15 @@ serverHandler.post(
  *                $ref: '#/components/schemas/Server'
  *      400:
  *        description: Bad request
+ *      401:
+ *        description: Unauthorized
  *      404:
  *        description: Not found
  */
 
 serverHandler.patch(
   "/server/:serverId",
+  isAuth,
   [body("url").isURL(), body("admin_mail").isEmail()],
   async (req: any, res: any, next: any) => {
     try {
@@ -229,11 +233,13 @@ serverHandler.patch(
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/Server'
+ *      401:
+ *        description: Unauthorized
  *      404:
  *        description: Server not found
  */
 
-serverHandler.delete("/server/:serverId", async (req, res, next) => {
+serverHandler.delete("/server/:serverId", isAuth, async (req, res, next) => {
   const id = req.params.serverId;
 
   try {

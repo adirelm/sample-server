@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const auth_1 = require("../middleware/auth");
 const error_1 = require("../helpers/error");
 const main_1 = require("../utils/helpers/main");
 const main_2 = require("../utils/helpers/main");
-const email_1 = require("../helpers/email");
 const error_2 = require("../helpers/error");
 const main_3 = require("../utils/helpers/main");
 const main_4 = require("../utils/helpers/main");
@@ -84,7 +84,6 @@ const serverHandler = (0, express_1.Router)();
  */
 serverHandler.get("/servers", async (req, res, next) => {
     try {
-        const auth = req.header("x-auth-token");
         const servers = await server_1.default.findAll();
         (0, main_2.renderSuccess)(res, 200, "Successfully fectched servers", servers);
     }
@@ -116,8 +115,10 @@ serverHandler.get("/servers", async (req, res, next) => {
  *                $ref: '#/components/schemas/Server'
  *      400:
  *        description: Bad request
+ *      401:
+ *        description: Unauthorized
  */
-serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
+serverHandler.post("/server", auth_1.isAuth, [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
     try {
         (0, error_2.handleValidationErrors)(req);
         const name = req.body.name;
@@ -127,7 +128,6 @@ serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL(), (0,
         if (await (0, main_3.checkExistenceOfUrl)(url)) {
             throw new error_1.ApiError(400, "Url already exists");
         }
-        await (0, email_1.sendMailToAdminWelcome)(name, url, adminMail);
         const server = await server_1.default.create({
             name,
             url,
@@ -165,10 +165,12 @@ serverHandler.post("/server", [(0, express_validator_1.body)("url").isURL(), (0,
  *                $ref: '#/components/schemas/Server'
  *      400:
  *        description: Bad request
+ *      401:
+ *        description: Unauthorized
  *      404:
  *        description: Not found
  */
-serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
+serverHandler.patch("/server/:serverId", auth_1.isAuth, [(0, express_validator_1.body)("url").isURL(), (0, express_validator_1.body)("admin_mail").isEmail()], async (req, res, next) => {
     try {
         const id = req.params.serverId;
         const server = await server_1.default.findByPk(id);
@@ -215,10 +217,12 @@ serverHandler.patch("/server/:serverId", [(0, express_validator_1.body)("url").i
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/Server'
+ *      401:
+ *        description: Unauthorized
  *      404:
  *        description: Server not found
  */
-serverHandler.delete("/server/:serverId", async (req, res, next) => {
+serverHandler.delete("/server/:serverId", auth_1.isAuth, async (req, res, next) => {
     const id = req.params.serverId;
     try {
         const server = await server_1.default.findByPk(id);

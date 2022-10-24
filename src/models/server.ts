@@ -5,8 +5,12 @@ import {
   Model,
   Table,
   DataType,
+  AfterSave,
+  AfterCreate,
 } from "sequelize-typescript";
 import { Status } from "./history";
+import { sendMailToAdminWelcome } from "../helpers/email";
+import { sendMailToAdminStatusChanged } from "../helpers/email";
 
 import History from "./history";
 
@@ -29,4 +33,25 @@ export default class Server extends Model {
 
   @HasMany(() => History)
   histroy: History[];
+
+  @AfterSave
+  static async sendStatusMail(instance: Server, options: any) {
+    if (instance.changed("status")) {
+      await sendMailToAdminStatusChanged(
+        instance.name,
+        instance.url,
+        instance.status,
+        instance.admin_mail
+      );
+    }
+  }
+
+  @AfterCreate
+  static async sendWelcomeMail(instance: Server, options: any) {
+    await sendMailToAdminWelcome(
+      instance.name,
+      instance.url,
+      instance.admin_mail
+    );
+  }
 }

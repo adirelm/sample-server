@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.healthCheckTask = void 0;
 const history_1 = require("../models/history");
-const email_1 = require("../helpers/email");
 const server_1 = __importDefault(require("../models/server"));
 const CONDITION_TO_SUCCESS = 5;
 const CONDITION_TO_FAILURE = 3;
@@ -27,12 +26,10 @@ const healthCheckTask = async function () {
             if (successCounter === CONDITION_TO_SUCCESS &&
                 server.status !== history_1.Status.SUCCESS) {
                 await server.update({ status: history_1.Status.SUCCESS });
-                await (0, email_1.sendMailToAdminStatusChanged)(server.name, server.url, server.status, server.admin_mail);
             }
             else if (failureCounter === CONDITION_TO_FAILURE &&
                 server.status !== history_1.Status.FAILURE) {
                 await server.update({ status: history_1.Status.FAILURE });
-                await (0, email_1.sendMailToAdminStatusChanged)(server.name, server.url, server.status, server.admin_mail);
             }
         });
     }

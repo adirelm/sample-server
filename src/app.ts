@@ -7,6 +7,7 @@ import swaggerUI from "swagger-ui-express";
 import { validator } from "./helpers/swagger";
 import { startScheduledTasks } from "./helpers/cron";
 
+import authRouter from "./routes/auth";
 import serverHandler from "./routes/server";
 import historyHandler from "./routes/history";
 import swaggerHandler from "./routes/swagger";
@@ -23,6 +24,7 @@ app.use("/api", swaggerUI.serve, swaggerUI.setup(specs));
 app.use(serverHandler);
 app.use(historyHandler);
 app.use(swaggerHandler);
+app.use(authRouter);
 
 app.use((err: ApiError, req: any, res: any, next: any) => {
   res
