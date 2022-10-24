@@ -36,7 +36,7 @@ app.use((err: any, req: any, res: any, next: any) => {
 
 app.listen({ port: PORT }, async () => {
   try {
-    // await sequelize.sync({ force: true });
+    await sequelize.sync({ force: true });
     await sequelize.authenticate();
     startScheduledTasks();
     console.log("Listening on port " + PORT);
