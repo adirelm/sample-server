@@ -1,1 +1,0 @@
-{"version":3,"file":"swagger.js","sourceRoot":"","sources":["../../src/routes/swagger.ts"],"names":[],"mappings":";;AAAA,qCAAiC;AAEjC,MAAM,cAAc,GAAG,IAAA,gBAAM,GAAE,CAAC;AAEhC;;;;;;GAMG;AAEH,cAAc,CAAC,GAAG,CAAC,GAAG,EAAE,CAAC,GAAQ,EAAE,GAAQ,EAAE,IAAS,EAAE,EAAE;IACxD,GAAG,CAAC,QAAQ,CAAC,MAAM,CAAC,CAAC;AACvB,CAAC,CAAC,CAAC;AAEH,kBAAe,cAAc,CAAC"}

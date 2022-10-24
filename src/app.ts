@@ -10,7 +10,6 @@ import { startScheduledTasks } from "./helpers/cron";
 import authRouter from "./routes/auth";
 import serverHandler from "./routes/server";
 import historyHandler from "./routes/history";
-import swaggerHandler from "./routes/swagger";
 
 const PORT = process.env.PORT ?? 3000;
 
@@ -19,12 +18,13 @@ const app = express();
 app.use(bodyParser.json());
 
 // Routes middleware
-app.use("/api", swaggerUI.serve, swaggerUI.setup(specs));
-// app.use(validator); // OpenApiValidator
+app.use(swaggerUI.serve, swaggerUI.setup(specs));
+app.use(validator); // OpenApiValidator
 app.use(serverHandler);
 app.use(historyHandler);
-app.use(swaggerHandler);
 app.use(authRouter);
+
+app.get("/");
 
 app.use((err: ApiError, req: any, res: any, next: any) => {
   res
