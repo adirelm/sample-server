@@ -7,6 +7,8 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const main_1 = require("../utils/helpers/main");
+const main_2 = require("../utils/helpers/main");
+const email_1 = require("../helpers/email");
 const auth_1 = require("../helpers/auth");
 const error_1 = require("../helpers/error");
 const user_1 = require("../models/user");
@@ -106,9 +108,9 @@ userRouter.post("/signup", [
     try {
         const username = req.body.username;
         const password = await bcrypt_1.default.hash(req.body.password, 12);
-        const email = req.body.email;
-        const firstName = req.body.firstName;
-        const lastName = req.body.lastName;
+        const email = (0, main_1.restrictEmail)(req.body.email);
+        const firstName = req.body.first_name;
+        const lastName = req.body.last_name;
         const status = user_1.Status.PENDING;
         (0, error_1.handleValidationErrors)(req);
         const user = await user_2.default.create({
@@ -119,8 +121,9 @@ userRouter.post("/signup", [
             firstName,
             lastName,
         });
+        (0, email_1.sendMailUserWelcome)(username, firstName, email);
         (0, auth_1.generateTokenAndSetHeader)(res, user);
-        (0, main_1.renderSuccess)(res, 201, "User created", {
+        (0, main_2.renderSuccess)(res, 201, "User created", {
             username,
             email,
             status,
@@ -179,7 +182,7 @@ userRouter.post("/login", [(0, express_validator_1.body)("email").isEmail()], as
         if (!isEqual)
             throw new error_1.ApiError(400, "Wrong password");
         (0, auth_1.generateTokenAndSetHeader)(res, user);
-        (0, main_1.renderSuccess)(res, 200, "Sucessfully logged in", {
+        (0, main_2.renderSuccess)(res, 200, "Sucessfully logged in", {
             username: user.username,
             email: user.email,
             status: user.status,

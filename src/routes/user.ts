@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { Router } from "express";
 import { body } from "express-validator";
+import { restrictEmail } from "../utils/helpers/main";
 import { renderSuccess } from "../utils/helpers/main";
+import { sendMailUserWelcome } from "../helpers/email";
 import { generateTokenAndSetHeader } from "../helpers/auth";
 import { ApiError, handleValidationErrors } from "../helpers/error";
-
 import { Status as UserStatus } from "../models/user";
 
 import User from "../models/user";
@@ -111,9 +111,9 @@ userRouter.post(
     try {
       const username = req.body.username;
       const password = await bcrypt.hash(req.body.password, 12);
-      const email = req.body.email;
-      const firstName = req.body.firstName;
-      const lastName = req.body.lastName;
+      const email = restrictEmail(req.body.email);
+      const firstName = req.body.first_name;
+      const lastName = req.body.last_name;
       const status = UserStatus.PENDING;
 
       handleValidationErrors(req);
@@ -126,6 +126,8 @@ userRouter.post(
         firstName,
         lastName,
       });
+
+      sendMailUserWelcome(username, firstName, email);
 
       generateTokenAndSetHeader(res, user);
       renderSuccess(res, 201, "User created", {

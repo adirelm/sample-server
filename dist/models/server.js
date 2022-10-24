@@ -25,7 +25,7 @@ let Server = class Server extends sequelize_typescript_1.Model {
         }
     }
     static async sendWelcomeMail(instance, options) {
-        await (0, email_1.sendMailToAdminWelcome)(instance.name, instance.url, instance.adminMail);
+        await (0, email_1.sendMailAdminServerRegister)(instance.name, instance.url, instance.adminMail);
     }
 };
 __decorate([

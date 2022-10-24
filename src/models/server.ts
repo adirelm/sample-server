@@ -12,7 +12,7 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { Status } from "./history";
-import { sendMailToAdminWelcome } from "../helpers/email";
+import { sendMailAdminServerRegister } from "../helpers/email";
 import { sendMailToAdminStatusChanged } from "../helpers/email";
 
 import User from "./user";
@@ -60,7 +60,7 @@ export default class Server extends Model {
 
   @AfterCreate
   static async sendWelcomeMail(instance: Server, options: any) {
-    await sendMailToAdminWelcome(
+    await sendMailAdminServerRegister(
       instance.name,
       instance.url,
       instance.adminMail

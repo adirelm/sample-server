@@ -30,7 +30,7 @@ const restrictEmail = function (admin_mail) {
     ];
     const authorizedAdminMail = authorizedMail.find((mail) => admin_mail === mail);
     if (!authorizedAdminMail)
-        throw new error_1.ApiError(400, "Unauthorized email");
+        throw new error_1.ApiError(400, "Unauthorized email, contact administrator for permissions");
     return authorizedAdminMail;
 };
 exports.restrictEmail = restrictEmail;
