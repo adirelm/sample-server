@@ -34,7 +34,7 @@ app.use((err, req, res, next) => {
 });
 app.listen({ port: PORT }, async () => {
     try {
-        await database_1.default.sync({ force: true });
+        // await sequelize.sync({ force: true });
         await database_1.default.authenticate();
         (0, cron_1.startScheduledTasks)();
         console.log("Listening on port " + PORT);

@@ -7,7 +7,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const main_1 = require("../utils/helpers/main");
-const token_1 = require("../helpers/token");
+const auth_1 = require("../helpers/auth");
 const error_1 = require("../helpers/error");
 const user_1 = require("../models/user");
 const user_2 = __importDefault(require("../models/user"));
@@ -41,7 +41,7 @@ const userRouter = (0, express_1.Router)();
  *          description: The user's last name
  *        status:
  *          type: string
- *          enum: [approved, pending]
+ *          enum: [active, pending]
  *          description: The user's status
  *
  *  parameters:
@@ -119,7 +119,7 @@ userRouter.post("/signup", [
             firstName,
             lastName,
         });
-        (0, token_1.generateTokenAndSetHeader)(res, user);
+        (0, auth_1.generateTokenAndSetHeader)(res, user);
         (0, main_1.renderSuccess)(res, 201, "User created", {
             username,
             email,
@@ -178,7 +178,7 @@ userRouter.post("/login", [(0, express_validator_1.body)("email").isEmail()], as
         const isEqual = await bcrypt_1.default.compare(password, user.password);
         if (!isEqual)
             throw new error_1.ApiError(400, "Wrong password");
-        (0, token_1.generateTokenAndSetHeader)(res, user);
+        (0, auth_1.generateTokenAndSetHeader)(res, user);
         (0, main_1.renderSuccess)(res, 200, "Sucessfully logged in", {
             username: user.username,
             email: user.email,

@@ -19,7 +19,7 @@ const history_1 = __importDefault(require("./history"));
 var Status;
 (function (Status) {
     Status["PENDING"] = "pending";
-    Status["APPROVED"] = "approved";
+    Status["ACTIVE"] = "active";
 })(Status = exports.Status || (exports.Status = {}));
 let User = class User extends sequelize_typescript_1.Model {
 };

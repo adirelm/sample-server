@@ -6,11 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const auth_1 = require("../middleware/auth");
-const error_1 = require("../helpers/error");
 const main_1 = require("../utils/helpers/main");
+const error_1 = require("../helpers/error");
 const main_2 = require("../utils/helpers/main");
-const error_2 = require("../helpers/error");
-const main_3 = require("../utils/helpers/main");
+const auth_2 = require("../helpers/auth");
 const server_1 = __importDefault(require("../models/server"));
 const serverHandler = (0, express_1.Router)();
 /**
@@ -116,17 +115,18 @@ serverHandler.get("/servers", async (req, res, next) => {
  */
 serverHandler.post("/server", auth_1.isAuth, [(0, express_validator_1.body)("url").isURL()], async (req, res, next) => {
     try {
-        (0, error_2.handleValidationErrors)(req);
+        const user = await (0, auth_2.checkUserPermissions)(req.modelId);
+        (0, error_1.handleValidationErrors)(req);
         const name = req.body.name;
         const status = req.body.status;
-        const adminMail = (0, main_1.restrictEmail)(req.modelMail);
-        let url = (0, main_3.modifyUrlWithHttpOrHttps)(req.body.url);
+        const adminMail = (0, main_2.restrictEmail)(req.modelMail);
+        let url = (0, main_1.modifyUrlWithHttpOrHttps)(req.body.url);
         const server = await server_1.default.create({
             name,
             url,
             status,
             adminMail,
-            adminId: req.modelId,
+            adminId: user.id,
         });
         (0, main_2.renderSuccess)(res, 201, "Server created", server);
     }
@@ -167,15 +167,13 @@ serverHandler.post("/server", auth_1.isAuth, [(0, express_validator_1.body)("url
 serverHandler.patch("/server/:serverId", auth_1.isAuth, [(0, express_validator_1.body)("url").isURL()], async (req, res, next) => {
     try {
         const id = req.params.serverId;
-        const server = await server_1.default.findByPk(id);
-        if (!server) {
-            throw new error_1.ApiError(404, "Server not found");
-        }
-        (0, error_2.handleValidationErrors)(req);
+        const user = await (0, auth_2.checkUserPermissions)(req.modelId);
+        const server = await (0, auth_2.checkServerPermissions)(id, user.id);
+        (0, error_1.handleValidationErrors)(req);
         const name = req.body.name;
         const status = req.body.status;
-        const adminMail = (0, main_1.restrictEmail)(req.modelMail);
-        let url = (0, main_3.modifyUrlWithHttpOrHttps)(req.body.url);
+        const adminMail = (0, main_2.restrictEmail)(req.modelMail);
+        let url = (0, main_1.modifyUrlWithHttpOrHttps)(req.body.url);
         const record = await server.update({
             name,
             url,
@@ -216,10 +214,8 @@ serverHandler.patch("/server/:serverId", auth_1.isAuth, [(0, express_validator_1
 serverHandler.delete("/server/:serverId", auth_1.isAuth, async (req, res, next) => {
     const id = req.params.serverId;
     try {
-        const server = await server_1.default.findByPk(id);
-        if (!server) {
-            throw new error_1.ApiError(404, "Server not found");
-        }
+        const user = await (0, auth_2.checkUserPermissions)(req.modelId);
+        const server = await (0, auth_2.checkServerPermissions)(id, user.id);
         await server.destroy();
         (0, main_2.renderSuccess)(res, 204, "Server deleted", server);
     }

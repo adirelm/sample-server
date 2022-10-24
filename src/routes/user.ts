@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Router } from "express";
 import { body } from "express-validator";
 import { renderSuccess } from "../utils/helpers/main";
-import { generateTokenAndSetHeader } from "../helpers/token";
+import { generateTokenAndSetHeader } from "../helpers/auth";
 import { ApiError, handleValidationErrors } from "../helpers/error";
 
 import { Status as UserStatus } from "../models/user";
@@ -41,7 +41,7 @@ const userRouter = Router();
  *          description: The user's last name
  *        status:
  *          type: string
- *          enum: [approved, pending]
+ *          enum: [active, pending]
  *          description: The user's status
  *
  *  parameters:

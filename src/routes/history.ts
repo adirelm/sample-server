@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { ApiError } from "../helpers/error";
+import { isAuth } from "../middleware/auth";
 import { renderSuccess } from "../utils/helpers/main";
 
 import Server from "../models/server";
 import History from "../models/history";
+import { checkServerPermissions, checkUserPermissions } from "../helpers/auth";
 
 const historyHandler = Router();
 
@@ -61,19 +63,21 @@ const historyHandler = Router();
  *        description: Not found
  */
 
-historyHandler.get("/history/:serverId", async (req, res, next) => {
-  const id = req.params.serverId;
-  try {
-    const server = await Server.findByPk(id);
-    if (!server) {
-      throw new ApiError(404, "Server not found");
+historyHandler.get(
+  "/history/:serverId",
+  isAuth,
+  async (req: any, res: any, next: any) => {
+    const id = req.params.serverId;
+    try {
+      const user = await checkUserPermissions(req.modelId);
+      const server = await checkServerPermissions(id, user.id);
+      const serverHistory = await server.$get("histroy");
+      renderSuccess(res, 200, "Successfully fetched history", serverHistory);
+    } catch (error) {
+      next(error);
     }
-    const serverHistory = await server.$get("histroy");
-    renderSuccess(res, 200, "Successfully fetched history", serverHistory);
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 /**
  * @swagger
@@ -81,10 +85,10 @@ historyHandler.get("/history/:serverId", async (req, res, next) => {
  *  get:
  *    tags:
  *      - History
- *    summary: Returns list of all the history records of all servers
+ *    summary: Returns list of all the history records of all the servers that associated with the authorized user
  *    responses:
  *      200:
- *        description: The list of the associated server's history record
+ *        description: Sucessfully fetched user servers
  *        content:
  *          application/json:
  *            schema:
@@ -95,14 +99,19 @@ historyHandler.get("/history/:serverId", async (req, res, next) => {
  *        description: Not found
  */
 
-historyHandler.get("/history", async (req, res, next) => {
-  try {
-    const history = await History.findAll();
-    renderSuccess(res, 200, "Successfully fetched history", history);
-  } catch (error) {
-    next(error);
+historyHandler.get(
+  "/history",
+  isAuth,
+  async (req: any, res: any, next: any) => {
+    try {
+      const user = await checkUserPermissions(req.modelId);
+      const history = await user.$get("history");
+      renderSuccess(res, 200, "Successfully fetched history", history);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 /**
  * @swagger
@@ -110,7 +119,7 @@ historyHandler.get("/history", async (req, res, next) => {
  *  delete:
  *    tags:
  *      - History
- *    summary: Delete history of all samples
+ *    summary: Delete history of all samples which belong to the authenticated user
  *    responses:
  *      204:
  *        description: History cleaned
@@ -118,13 +127,18 @@ historyHandler.get("/history", async (req, res, next) => {
  *        description: Not found
  */
 
-historyHandler.delete("/history", async (req, res, next) => {
-  try {
-    await History.destroy({ truncate: true });
-    renderSuccess(res, 204, "History cleaned", []);
-  } catch (error) {
-    next(error);
+historyHandler.delete(
+  "/history",
+  isAuth,
+  async (req: any, res: any, next: any) => {
+    try {
+      const user = await checkUserPermissions(req.modelId);
+      await History.destroy({ where: { userId: user.id }, truncate: true });
+      renderSuccess(res, 204, "History cleaned", []);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 export default historyHandler;

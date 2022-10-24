@@ -13,7 +13,7 @@ import History from "./history";
 
 export enum Status {
   PENDING = "pending",
-  APPROVED = "approved",
+  ACTIVE = "active",
 }
 
 @Table

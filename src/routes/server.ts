@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { isAuth } from "../middleware/auth";
-import { ApiError } from "../helpers/error";
-import { restrictEmail } from "../utils/helpers/main";
-import { renderSuccess } from "../utils/helpers/main";
-import { handleValidationErrors } from "../helpers/error";
 import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
+import { ApiError, handleValidationErrors } from "../helpers/error";
+import { restrictEmail, renderSuccess } from "../utils/helpers/main";
+import { checkServerPermissions, checkUserPermissions } from "../helpers/auth";
 
+import User from "../models/user";
 import Server from "../models/server";
 
 const serverHandler = Router();
@@ -121,6 +121,7 @@ serverHandler.post(
   [body("url").isURL()],
   async (req: any, res: any, next: any) => {
     try {
+      const user = await checkUserPermissions(req.modelId);
       handleValidationErrors(req);
       const name = req.body.name;
       const status = req.body.status;
@@ -132,7 +133,7 @@ serverHandler.post(
         url,
         status,
         adminMail,
-        adminId: req.modelId,
+        adminId: user.id,
       });
       renderSuccess(res, 201, "Server created", server);
     } catch (error) {
@@ -179,12 +180,10 @@ serverHandler.patch(
   async (req: any, res: any, next: any) => {
     try {
       const id = req.params.serverId;
-      const server = await Server.findByPk(id);
-      if (!server) {
-        throw new ApiError(404, "Server not found");
-      }
-
+      const user = await checkUserPermissions(req.modelId);
+      const server = await checkServerPermissions(id, user.id);
       handleValidationErrors(req);
+
       const name = req.body.name;
       const status = req.body.status;
       const adminMail = restrictEmail(req.modelMail);
@@ -229,20 +228,22 @@ serverHandler.patch(
  *        description: Server not found
  */
 
-serverHandler.delete("/server/:serverId", isAuth, async (req, res, next) => {
-  const id = req.params.serverId;
+serverHandler.delete(
+  "/server/:serverId",
+  isAuth,
+  async (req: any, res: any, next: any) => {
+    const id = req.params.serverId;
 
-  try {
-    const server = await Server.findByPk(id);
+    try {
+      const user = await checkUserPermissions(req.modelId);
+      const server = await checkServerPermissions(id, user.id);
 
-    if (!server) {
-      throw new ApiError(404, "Server not found");
+      await server.destroy();
+      renderSuccess(res, 204, "Server deleted", server);
+    } catch (error) {
+      next(error);
     }
-    await server.destroy();
-    renderSuccess(res, 204, "Server deleted", server);
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 export default serverHandler;
