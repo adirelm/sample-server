@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "start:build": "tsc -w",
     "start:run": "nodemon dist/app.js",
     "dev": "concurrently npm:start:*",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",
