@@ -24,7 +24,6 @@ app.use(swagger_2.validator); // OpenApiValidator
 app.use(server_1.default);
 app.use(history_1.default);
 app.use(user_1.default);
-app.get("/");
 app.use((err, req, res, next) => {
     const message = (0, error_1.handleErrorMessage)(err);
     res.status(err.status || 500).json({

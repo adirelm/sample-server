@@ -14,14 +14,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Status = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
+const moment_1 = __importDefault(require("moment"));
+const otplib_1 = require("otplib");
+const otp_1 = __importDefault(require("./otp"));
 const server_1 = __importDefault(require("./server"));
 const history_1 = __importDefault(require("./history"));
+const error_1 = require("../helpers/error");
 var Status;
 (function (Status) {
     Status["PENDING"] = "pending";
     Status["ACTIVE"] = "active";
 })(Status = exports.Status || (exports.Status = {}));
 let User = class User extends sequelize_typescript_1.Model {
+    async generateOtp() {
+        try {
+            const expiresAt = (0, moment_1.default)().add(10, "minutes").toDate();
+            otplib_1.authenticator.options = {
+                step: moment_1.default.duration(10, "minutes").asSeconds(),
+            };
+            const sharedSecret = otplib_1.authenticator.generateSecret();
+            const otpCode = otplib_1.authenticator.generate(sharedSecret);
+            await this.$create("otp", {
+                secret: sharedSecret,
+                status: Status.ACTIVE,
+                expiresAt,
+            });
+            return otpCode;
+        }
+        catch (error) {
+            const err = error;
+            throw new error_1.ApiError(500, err.message);
+        }
+    }
 };
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
@@ -49,6 +73,8 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.Default)(Status.PENDING),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ENUM(...Object.values(Status))),
     __metadata("design:type", String)
 ], User.prototype, "status", void 0);
@@ -60,6 +86,10 @@ __decorate([
     (0, sequelize_typescript_1.HasMany)(() => history_1.default),
     __metadata("design:type", Array)
 ], User.prototype, "history", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => otp_1.default),
+    __metadata("design:type", Array)
+], User.prototype, "otp", void 0);
 User = __decorate([
     sequelize_typescript_1.Table
 ], User);

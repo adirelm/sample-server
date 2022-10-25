@@ -32,19 +32,123 @@ export const sendMailAdminServerRegister = function (
 export const sendMailUserWelcome = function (
   username: string,
   firstname: string,
+  otpCode: string,
   adminMail: string
 ) {
   sendMail.send({
     to: adminMail,
     from: "adir@monkeytech.co.il",
     subject: `Welcome ${firstname || username}`,
-    html: userWelcomeEmailTemplate(username, firstname),
+    html: userWelcomeEmailTemplate(username, firstname, otpCode),
   });
+};
+
+export const sendMailUserActivated = function (
+  username: string,
+  adminMail: string
+) {
+  sendMail.send({
+    to: adminMail,
+    from: "adir@monkeytech.co.il",
+    subject: `User ${username} activated`,
+    html: userActivatedEmailTemplate(username),
+  });
+};
+
+const userActivatedEmailTemplate = function (username: string) {
+  return `    <body>
+  <center class="wrapper" data-link-color="#1188E6" data-body-style="font-size:14px; font-family:arial,helvetica,sans-serif; color:#000000; background-color:#FFFFFF;">
+    <div class="webkit">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" class="wrapper" bgcolor="#FFFFFF">
+        <tr>
+          <td valign="top" bgcolor="#FFFFFF" width="100%">
+            <table width="100%" role="content-container" class="outer" align="center" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="100%">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td>
+                        <!--[if mso]>
+<center>
+<table><tr><td width="600">
+<![endif]-->
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;" align="center">
+                                  <tr>
+                                    <td role="modules-container" style="padding:0px 0px 0px 0px; color:#000000; text-align:left;" bgcolor="#FFFFFF" width="100%" align="left"><table class="module preheader preheader-hide" role="module" data-type="preheader" border="0" cellpadding="0" cellspacing="0" width="100%" style="display: none !important; mso-hide: all; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0;">
+<tr>
+  <td role="module-content">
+    <p></p>
+  </td>
+</tr>
+</table><table class="wrapper" role="module" data-type="image" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="6593bfa5-6181-4070-9569-a87270639989">
+<tbody>
+  <tr>
+    <td style="font-size:6px; line-height:10px; padding:0px 0px 0px 0px;" valign="top" align="center">
+      <img class="max-width" border="0" style="display:block; color:#000000; text-decoration:none; font-family:Helvetica, arial, sans-serif; font-size:16px; max-width:30% !important; width:30%; height:auto !important;" width="180" alt="" data-proportionally-constrained="true" data-responsive="true" src="http://cdn.mcauto-images-production.sendgrid.net/0dd99ba9801b3b22/aad56fca-7326-4982-95b5-fb0a0791866c/500x500.png">
+    </td>
+  </tr>
+</tbody>
+</table><table class="module" role="module" data-type="divider" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="4743f6a7-2515-465d-a5ed-565b87041205">
+<tbody>
+  <tr>
+    <td style="padding:0px 0px 0px 0px;" role="module-content" height="100%" valign="top" bgcolor="">
+      <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" height="4px" style="line-height:4px; font-size:4px;">
+        <tbody>
+          <tr>
+            <td style="padding:0px 0px 4px 0px;" bgcolor="#a7adc6"></td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+</tbody>
+</table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="45cabcb8-45b3-4154-8111-1666c075445d" data-mc-module-version="2019-10-22">
+<tbody>
+  <tr>
+    <td style="padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><span style="font-size: 18px"><strong>User ${username} successfully </strong></span><span style="font-size: 18px; color: #089f08"><strong>activated</strong></span></div><div></div></div></td>
+  </tr>
+</tbody>
+</table><table class="module" role="module" data-type="divider" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="4743f6a7-2515-465d-a5ed-565b87041205.1">
+<tbody>
+  <tr>
+    <td style="padding:0px 0px 0px 0px;" role="module-content" height="100%" valign="top" bgcolor="">
+      <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" height="4px" style="line-height:4px; font-size:4px;">
+        <tbody>
+          <tr>
+            <td style="padding:0px 0px 4px 0px;" bgcolor="#a7adc6"></td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+</tbody>
+</table><div data-role="module-unsubscribe" class="module" role="module" data-type="unsubscribe" style="color:#444444; font-size:12px; line-height:20px; padding:16px 16px 16px 16px; text-align:Center;" data-muid="4e838cf3-9892-4a6d-94d6-170e474d21e5"><div class="Unsubscribe--addressLine"></div><p style="font-size:12px; line-height:20px;"><a class="Unsubscribe--unsubscribeLink" href="{{{unsubscribe}}}" target="_blank" style="">Unsubscribe</a> - <a href="{{{unsubscribe_preferences}}}" target="_blank" class="Unsubscribe--unsubscribePreferences" style="">Unsubscribe Preferences</a></p></div></td>
+                                  </tr>
+                                </table>
+                                <!--[if mso]>
+                              </td>
+                            </tr>
+                          </table>
+                        </center>
+                        <![endif]-->
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </center>
+</body>`;
 };
 
 const userWelcomeEmailTemplate = function (
   username: string,
-  firstname: string
+  firstname: string,
+  otpCode: string
 ) {
   return `    <body>
   <center class="wrapper" data-link-color="#1188E6" data-body-style="font-size:14px; font-family:arial,helvetica,sans-serif; color:#000000; background-color:#FFFFFF;">
@@ -117,8 +221,10 @@ const userWelcomeEmailTemplate = function (
 </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="a67573db-d29e-4372-8c86-43b9f4d3d576" data-mc-module-version="2019-10-22">
 <tbody>
   <tr>
-    <td style="padding:18px 0px 18px 0px; line-height:16px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><strong>Your user is currently in </strong><span style="color: #e50808"><strong>pending</strong></span><strong> status, soon you will be approved and you can enter a server url for sampling, and enjoy a health check of the server with email notifications!<br>
-<br>
+    <td style="padding:18px 0px 18px 0px; line-height:16px; text-align:inherit; background-color:#ffffff;" height="100%" valign="top" bgcolor="#ffffff" role="module-content"><div><div style="font-family: inherit; text-align: center"><strong>Your user is currently in </strong><span style="color: #e50808"><strong>pending</strong></span><strong> status.</strong></div>
+<div style="font-family: inherit; text-align: center"><br></div>
+<div style="font-family: inherit; text-align: center"><span style="font-size: 18px"><strong>CODE:</strong></span><span style="font-size: 18px; color: #000000"><strong> </strong></span><span style="font-size: 18px; color: #6aafed"><strong>${otpCode}</strong></span></div>
+<div style="font-family: inherit; text-align: center"><strong><br>
 </strong><span style="color: #c6b8b8"><strong>We will notify you when your user is activated.</strong></span></div><div></div></div></td>
   </tr>
 </tbody>

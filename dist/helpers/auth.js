@@ -10,7 +10,7 @@ const user_1 = require("../models/user");
 const user_2 = __importDefault(require("../models/user"));
 const server_1 = __importDefault(require("../models/server"));
 const generateTokenAndSetHeader = function (res, instance) {
-    const token = jsonwebtoken_1.default.sign({ modelId: instance.id, modelMail: instance.email }, process.env.TOKEN_SECRET, {
+    const token = jsonwebtoken_1.default.sign({ modelId: instance.id, modelMail: instance.email }, process.env.JWT_TOKEN_SECRET, {
         expiresIn: "1h",
     });
     res.set({ "X-Auth-Token": token });
@@ -31,7 +31,7 @@ const checkServerPermissions = async function (serverId, userId) {
     if (!server) {
         throw new error_1.ApiError(404, "Server not found");
     }
-    if (server.id !== userId) {
+    if (server.adminId !== userId) {
         throw new error_1.ApiError(400, "Request denied, you are not the admin");
     }
     return server;

@@ -11,7 +11,7 @@ const isAuth = async (req, res, next) => {
         const token = req.header("X-Auth-Token");
         if (!token)
             throw new error_1.ApiError(401, "Unauthorized");
-        const decodedToken = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        const decodedToken = jsonwebtoken_1.default.verify(token, process.env.JWT_TOKEN_SECRET);
         if (!decodedToken)
             throw new error_1.ApiError(401, "Unauthorized");
         if (!decodedToken.modelId || !decodedToken.modelMail)

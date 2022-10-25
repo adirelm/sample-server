@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
-const main_1 = require("../utils/helpers/main");
-const main_2 = require("../utils/helpers/main");
-const email_1 = require("../helpers/email");
+const otp_1 = require("../models/otp");
+const user_1 = require("../models/user");
 const auth_1 = require("../helpers/auth");
 const error_1 = require("../helpers/error");
-const user_1 = require("../models/user");
+const main_1 = require("../utils/helpers/main");
+const email_1 = require("../helpers/email");
 const user_2 = __importDefault(require("../models/user"));
 const userRouter = (0, express_1.Router)();
 /**
@@ -111,22 +111,27 @@ userRouter.post("/signup", [
         const email = (0, main_1.restrictEmail)(req.body.email);
         const firstName = req.body.first_name;
         const lastName = req.body.last_name;
-        const status = user_1.Status.PENDING;
         (0, error_1.handleValidationErrors)(req);
+        const isEmailExist = await user_2.default.findOne({ where: { email } });
+        if (!!isEmailExist)
+            throw new error_1.ApiError(400, "Email already exists");
+        const isUserNameExist = await user_2.default.findOne({ where: { username } });
+        if (!!isUserNameExist)
+            throw new error_1.ApiError(400, "Username alreadt exists");
         const user = await user_2.default.create({
             username,
             password,
             email,
-            status,
             firstName,
             lastName,
         });
-        (0, email_1.sendMailUserWelcome)(username, firstName, email);
+        const otpCode = await user.generateOtp();
+        (0, email_1.sendMailUserWelcome)(username, firstName, otpCode, email);
         (0, auth_1.generateTokenAndSetHeader)(res, user);
-        (0, main_2.renderSuccess)(res, 201, "User created", {
+        (0, main_1.renderSuccess)(res, 201, "User created", {
             username,
             email,
-            status,
+            status: user.status,
             firstName,
             lastName,
         });
@@ -182,13 +187,116 @@ userRouter.post("/login", [(0, express_validator_1.body)("email").isEmail()], as
         if (!isEqual)
             throw new error_1.ApiError(400, "Wrong password");
         (0, auth_1.generateTokenAndSetHeader)(res, user);
-        (0, main_2.renderSuccess)(res, 200, "Sucessfully logged in", {
+        (0, main_1.renderSuccess)(res, 200, "Sucessfully logged in", {
             username: user.username,
             email: user.email,
             status: user.status,
             first_name: user.firstName,
             last_name: user.lastName,
         });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+/**
+ * @swagger
+ * /validate_code:
+ *  post:
+ *    tags:
+ *      - User
+ *    summary: Activate user
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - email
+ *              - code
+ *            properties:
+ *              email:
+ *                type: string
+ *                description: The user's email
+ *              code:
+ *                type: string
+ *                description: One time password that sent via mail to the user
+ *    responses:
+ *      200:
+ *        description: User activated
+ *        headers:
+ *           X-Auth-Token:
+ *            schema:
+ *              type: string
+ *            description: A valid user API access token
+ *      400:
+ *        description: Bad request
+ */
+userRouter.post("/validate_code", async (req, res, next) => {
+    var _a;
+    const email = req.body.email;
+    const code = req.body.code;
+    try {
+        const user = await user_2.default.findOne({ where: { email } });
+        if (!user) {
+            throw new error_1.ApiError(400, "User not found");
+        }
+        const otp = await user.$get("otp", {
+            where: { status: otp_1.Status.ACTIVE },
+            order: [["created_at", "DESC"]],
+            limit: 1,
+        });
+        const isValid = await ((_a = otp[0]) === null || _a === void 0 ? void 0 : _a.validateOtp(code));
+        if (!isValid) {
+            throw new error_1.ApiError(400, "No otp available");
+        }
+        otp[0].afterSuccessfulActivation();
+        (0, auth_1.generateTokenAndSetHeader)(res, user);
+        (0, email_1.sendMailUserActivated)(user.username, user.email);
+        (0, main_1.renderSuccess)(res, 200, "User activated", []);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+/**
+ * @swagger
+ * /resend_code:
+ *  post:
+ *    tags:
+ *      - User
+ *    summary: Resend otp code
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *                description: The user's email
+ *    responses:
+ *      200:
+ *        description: Code resent
+ *      400:
+ *        description: Bad request
+ */
+userRouter.post("/resend_code", async (req, res, next) => {
+    try {
+        const email = req.body.email;
+        const user = await user_2.default.findOne({ where: { email } });
+        if (!user)
+            throw new error_1.ApiError(400, "User not found");
+        if (user.status === user_1.Status.ACTIVE) {
+            throw new error_1.ApiError(400, "User already activated");
+        }
+        const otpCode = await user.generateOtp();
+        (0, email_1.sendMailUserWelcome)(user.username, user.firstName, otpCode, email);
+        (0, main_1.renderSuccess)(res, 200, "Code resent", []);
     }
     catch (error) {
         next(error);

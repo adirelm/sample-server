@@ -22,9 +22,7 @@ export const renderSuccess = function (
   message: string,
   data: any
 ) {
-  if (status) {
-    res.status(status).json({ status, message, data });
-  }
+  res.status(status).json({ status, message, data });
 };
 
 export const restrictEmail = function (admin_mail: string) {

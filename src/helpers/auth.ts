@@ -13,7 +13,7 @@ export const generateTokenAndSetHeader = function (
 ) {
   const token = jwt.sign(
     { modelId: instance.id, modelMail: instance.email },
-    process.env.TOKEN_SECRET!,
+    process.env.JWT_TOKEN_SECRET!,
     {
       expiresIn: "1h",
     }
@@ -43,7 +43,7 @@ export const checkServerPermissions = async function (
     throw new ApiError(404, "Server not found");
   }
 
-  if (server.id !== userId) {
+  if (server.adminId !== userId) {
     throw new ApiError(400, "Request denied, you are not the admin");
   }
 

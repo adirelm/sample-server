@@ -16,9 +16,7 @@ const modifyUrlWithHttpOrHttps = function (url) {
 };
 exports.modifyUrlWithHttpOrHttps = modifyUrlWithHttpOrHttps;
 const renderSuccess = function (res, status, message, data) {
-    if (status) {
-        res.status(status).json({ status, message, data });
-    }
+    res.status(status).json({ status, message, data });
 };
 exports.renderSuccess = renderSuccess;
 const restrictEmail = function (admin_mail) {

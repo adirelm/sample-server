@@ -24,8 +24,6 @@ app.use(serverHandler);
 app.use(historyHandler);
 app.use(userHandler);
 
-app.get("/");
-
 app.use((err: any, req: any, res: any, next: any) => {
   const message = handleErrorMessage(err);
   res.status(err.status || 500).json({
