@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "tsc": "tsc",
+    "build": "npm run tsc",
     "start:build": "tsc -w",
     "start:run": "nodemon dist/app.js",
     "dev": "concurrently npm:start:*",
-    "start": "node dist/app.js",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "postinstall": "npm run build"
   },
   "keywords": [],
@@ -32,6 +33,7 @@
     "performance-now": "^2.1.0",
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",
+    "pm2": "^5.2.2",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.25.3",
     "sequelize-typescript": "^2.1.5",
