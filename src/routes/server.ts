@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { isAuth } from "../middleware/auth";
+import { isAuth } from "../middlewares/auth";
 import { modifyUrlWithHttpOrHttps } from "../utils/helpers/main";
 import { ApiError, handleValidationErrors } from "../helpers/error";
 import { restrictEmail, renderSuccess } from "../utils/helpers/main";

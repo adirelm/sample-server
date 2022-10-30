@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { ApiError } from "../helpers/error";
-import { isAuth } from "../middleware/auth";
+import { isAuth } from "../middlewares/auth";
 import { renderSuccess } from "../utils/helpers/main";
 
 import Server from "../models/server";

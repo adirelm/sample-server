@@ -17,8 +17,6 @@ import Otp from "./otp";
 import Server from "./server";
 import History from "./history";
 import { ApiError } from "../helpers/error";
-import fs from "fs/promises";
-import { userInfo } from "os";
 
 export enum Status {
   PENDING = "pending",

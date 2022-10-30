@@ -36,6 +36,7 @@
     "pm2": "^5.2.2",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.25.3",
+    "sequelize-cli": "^6.5.2",
     "sequelize-typescript": "^2.1.5",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.5.0",
